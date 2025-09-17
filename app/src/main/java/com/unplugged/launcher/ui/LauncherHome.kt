@@ -54,35 +54,42 @@ fun LauncherHome() {
     }
 
     Box(Modifier.fillMaxSize()) {
-        GlassBox(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .fillMaxWidth()
-                .padding(top = 120.dp)
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(time, fontSize = 48.sp, color = Color.White)
-                Text(date, fontSize = 20.sp, color = Color.White)
-            }
-        }
-
-        Icon(
-            imageVector = Icons.Filled.Email,
-            contentDescription = "Mail",
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(24.dp),
-            tint = Color.White
-        )
-
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 32.dp)
+                .padding(vertical = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Eingabefeld in GlasBox
+            // ⏱ TimeBox
+            GlassBox(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .padding(top = 24.dp)
+                    .weight(1f)
+            ) {
+                // 📧 Notification Icon oben rechts
+                Icon(
+                    imageVector = Icons.Filled.Email,
+                    contentDescription = "Mail",
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(24.dp),
+                    tint = Color.White
+                )
+
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(time, fontSize = 48.sp, color = Color.White)
+                    Text(date, fontSize = 20.sp, color = Color.White)
+                }
+            }
+
+            // 📩 Eingabefeld
             GlassBox(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -92,16 +99,14 @@ fun LauncherHome() {
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 16.dp)
-                        .horizontalScroll(rememberScrollState()),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .horizontalScroll(scrollState),
-                        contentAlignment = Alignment.CenterStart
+                        contentAlignment = Alignment.CenterEnd
                     ) {
                         Text(
                             text = enteredNumber,
@@ -116,62 +121,67 @@ fun LauncherHome() {
                         contentDescription = "Löschen",
                         tint = Color.White,
                         modifier = Modifier
-                            .size(35.dp)
+                            .size(32.dp)
                             .padding(start = 8.dp)
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = {
-                                    if (enteredNumber.isNotEmpty()) {
-                                        enteredNumber = enteredNumber.dropLast(1)
-                                    }
+                                indication = null
+                            ) {
+                                if (enteredNumber.isNotEmpty()) {
+                                    enteredNumber = enteredNumber.dropLast(1)
                                 }
-                            )
+                            }
                     )
                 }
             }
 
+            // 🔢 Dialpad
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                val rows = listOf(
+                    listOf("1", "2", "3"),
+                    listOf("4", "5", "6"),
+                    listOf("7", "8", "9"),
+                    listOf("*", "0", "#")
+                )
+                rows.forEach { row ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        row.forEach { label ->
+                            GlassKey(
+                                onClick = { onNumberClick(label) },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(label, fontSize = 28.sp, color = Color.White)
+                            }
+                        }
+                    }
+                }
 
-            val rows = listOf(
-                listOf("1", "2", "3"),
-                listOf("4", "5", "6"),
-                listOf("7", "8", "9"),
-                listOf("*", "0", "#")
-            )
-            rows.forEach { row ->
+                // 📞 Call Button
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    row.forEach { label ->
-                        GlassKey(
-                            onClick = { onNumberClick(label) },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(label, fontSize = 28.sp, color = Color.White)
-                        }
+                    GlassKey(
+                        onClick = { /* TODO: Call Action */ },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Phone,
+                            contentDescription = "Anrufen",
+                            modifier = Modifier.size(36.dp),
+                            tint = Color.White
+                        )
                     }
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                GlassKey(
-                    onClick = { /* TODO: Call Action */ },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Phone,
-                        contentDescription = "Anrufen",
-                        modifier = Modifier.size(36.dp),
-                        tint = Color.White
-                    )
                 }
             }
         }
