@@ -4,44 +4,34 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
+import com.unplugged.launcher.ui.LauncherHome
+import com.unplugged.launcher.ui.theme.GradientBackground
 import com.unplugged.launcher.ui.theme.UnpluggedTheme
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        window.setBackgroundDrawableResource(android.R.color.transparent)
         enableEdgeToEdge()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContent {
             UnpluggedTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                GradientBackground {
+                    LauncherHome()
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun currentTime(): String =
+    SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    UnpluggedTheme {
-        Greeting("Android")
-    }
-}
+fun currentDate(): String =
+    SimpleDateFormat("EEEE, dd.MM.yyyy", Locale.getDefault()).format(Date())
