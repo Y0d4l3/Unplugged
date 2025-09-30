@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,7 +34,6 @@ fun DialPad(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Eingabefeld
         GlassBox(
             modifier = Modifier
                 .fillMaxWidth()
@@ -47,13 +47,13 @@ fun DialPad(
                 Text(
                     text = enteredNumber,
                     fontSize = 28.sp,
-                    color = androidx.compose.ui.graphics.Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.weight(1f)
                 )
                 Icon(
                     imageVector = Icons.Default.Clear,
                     contentDescription = "Löschen",
-                    tint = androidx.compose.ui.graphics.Color.White,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .size(32.dp)
                         .clickable { onDelete() }
@@ -81,7 +81,7 @@ fun DialPad(
                     imageVector = Icons.Filled.Phone,
                     contentDescription = "Anrufen",
                     modifier = Modifier.size(36.dp),
-                    tint = androidx.compose.ui.graphics.Color.White
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
         }

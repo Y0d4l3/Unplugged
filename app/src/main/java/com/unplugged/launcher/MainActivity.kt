@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.WindowCompat
 import com.unplugged.launcher.ui.LauncherHome
-import com.unplugged.launcher.ui.theme.GradientBackground
 import com.unplugged.launcher.ui.theme.UnpluggedTheme
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -29,9 +28,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             UnpluggedTheme {
-                GradientBackground {
-                    LauncherHome()
-                }
+                LauncherHome()
             }
         }
     }

@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.material3.MaterialTheme
 import com.unplugged.launcher.LauncherApp
 import com.unplugged.launcher.currentDate
 import com.unplugged.launcher.currentTime
@@ -33,15 +34,12 @@ fun LauncherHome() {
     var enteredNumber by remember { mutableStateOf("") }
     var appSlots by remember { mutableStateOf(List<LauncherApp?>(12) { null }) }
 
-    // State für App-Auswahl
     var selectedSlot by remember { mutableStateOf<Int?>(null) }
     var showAppPicker by remember { mutableStateOf(false) }
 
-    // Clock-State für "infinite pager"
     val topRealPages = 3
     val topPagerState = rememberPagerState(initialPage = Int.MAX_VALUE / 2, pageCount = { Int.MAX_VALUE })
 
-    // Bottom-State für "infinite pager"
     val bottomRealPages = 2 // z. B. 1x Dialpad, 1x App-Grid
     val bottomPagerState = rememberPagerState(initialPage = Int.MAX_VALUE / 2, pageCount = { Int.MAX_VALUE })
 
@@ -55,7 +53,6 @@ fun LauncherHome() {
 
     Column(Modifier.fillMaxSize()) {
 
-        // === OBERES DRITTEL: Clock/Infos ===
         HorizontalPager(
             state = topPagerState,
             modifier = Modifier
@@ -79,27 +76,26 @@ fun LauncherHome() {
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
                                 .padding(24.dp),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                         Column(
                             modifier = Modifier.fillMaxSize(),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(time, fontSize = 48.sp, color = Color.White)
-                            Text(date, fontSize = 20.sp, color = Color.White)
+                            Text(time, fontSize = 48.sp, color = MaterialTheme.colorScheme.onBackground)
+                            Text(date, fontSize = 20.sp, color = MaterialTheme.colorScheme.onBackground)
                         }
                     }
                 }
                 1 -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Widget-Seite", fontSize = 32.sp, color = Color.White)
+                        Text("Widget-Seite", fontSize = 32.sp, color = MaterialTheme.colorScheme.onBackground)
                     }
                 }
             }
         }
 
-        // === UNTERE ZWEI DRITTEL: Dialpad / App Pages ===
         HorizontalPager(
             state = bottomPagerState,
             modifier = Modifier
@@ -133,7 +129,6 @@ fun LauncherHome() {
         }
     }
 
-    // === App-Auswahl-Dialog ===
     if (showAppPicker && selectedSlot != null) {
         AppPickerDialog(
             onDismiss = { showAppPicker = false },
