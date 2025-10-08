@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Unplugged</string>
+    <string name="unplugged_switcher">Unplugged Switcher</string>
 </resources>
