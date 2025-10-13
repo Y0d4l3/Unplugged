@@ -1,4 +1,5 @@
-package com.unplugged.launcher.ui
+package com.unplugged.launcher.ui.components
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -7,20 +8,18 @@ import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.unplugged.launcher.ui.components.GlassBox
-import com.unplugged.launcher.ui.components.GlassKey
-import com.unplugged.launcher.ui.components.GridPad
 
 @Composable
 fun DialPad(
     enteredNumber: String,
     onNumberClick: (String) -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onCall: () -> Unit // optional hinzugefügt, sauberer als TODO
 ) {
     val rows = listOf(
         listOf("1", "2", "3"),
@@ -34,6 +33,7 @@ fun DialPad(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Eingabebox oben
         GlassBox(
             modifier = Modifier
                 .fillMaxWidth()
@@ -41,7 +41,9 @@ fun DialPad(
                 .padding(horizontal = 24.dp)
         ) {
             Row(
-                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -61,10 +63,22 @@ fun DialPad(
             }
         }
 
-        // GridPad wiederverwenden
-        GridPad(rows = rows) { _, _, item ->
-            if (item is String) onNumberClick(item)
-        }
+        // 🔹 GridPad nutzt jetzt Slot-API (neu)
+        GridPad(
+            rows = rows,
+            onClick = { _, _, item ->
+                if (item is String) onNumberClick(item)
+            },
+            cellContent = { item ->
+                if (item is String) {
+                    Text(
+                        text = item,
+                        fontSize = 28.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            }
+        )
 
         // Call Button unten
         Row(
@@ -74,7 +88,7 @@ fun DialPad(
             horizontalArrangement = Arrangement.Center
         ) {
             GlassKey(
-                onClick = { /* TODO: Call Action */ },
+                onClick = onCall,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
