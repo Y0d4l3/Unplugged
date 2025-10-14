@@ -1,22 +1,17 @@
 package com.unplugged.launcher.ui
 
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
 import com.unplugged.launcher.data.LauncherApp
 import com.unplugged.launcher.currentDate
 import com.unplugged.launcher.currentTime
 import com.unplugged.launcher.ui.components.AppPickerDialog
 import kotlinx.coroutines.delay
 import androidx.core.net.toUri
-import com.unplugged.launcher.ui.util.checkAndPromptBatterySaver
 
 @Composable
 fun LauncherScreen() {
@@ -48,35 +43,6 @@ fun LauncherScreen() {
             delay(1000L)
         }
     }
-
-
-    DisposableEffect(Unit) {
-        val receiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                if (intent?.action == "com.unplugged.launcher.ACTION_LAUNCHER_RESUMED") {
-                    checkAndPromptBatterySaver(context!!)
-                }
-            }
-        }
-
-        val filter = IntentFilter("com.unplugged.launcher.ACTION_LAUNCHER_RESUMED")
-        ContextCompat.registerReceiver(
-            context,
-            receiver,
-            filter,
-            ContextCompat.RECEIVER_NOT_EXPORTED
-        )
-
-        checkAndPromptBatterySaver(context)
-
-        onDispose {
-            try {
-                context.unregisterReceiver(receiver)
-            } catch (_: Exception) { }
-        }
-    }
-
-
 
     // 📱 Haupt-Layout
     Column(Modifier.fillMaxSize()) {

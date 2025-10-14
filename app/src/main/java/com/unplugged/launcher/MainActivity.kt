@@ -1,6 +1,5 @@
 package com.unplugged.launcher
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,15 +23,6 @@ class MainActivity : ComponentActivity() {
             UnpluggedTheme {
                 LauncherScreen()
             }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        val intent = intent
-        if (Intent.ACTION_MAIN == intent?.action && intent.hasCategory(Intent.CATEGORY_HOME)) {
-            sendBroadcast(Intent("com.unplugged.launcher.ACTION_LAUNCHER_RESUMED"))
         }
     }
 }
