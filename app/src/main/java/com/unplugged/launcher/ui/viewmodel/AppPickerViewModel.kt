@@ -3,6 +3,7 @@ package com.unplugged.launcher.ui.viewmodel
 import android.app.Application
 import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.unplugged.launcher.data.LauncherApp
@@ -29,7 +30,7 @@ class AppPickerViewModel(application: Application) : AndroidViewModel(applicatio
                 val intent = Intent(Intent.ACTION_MAIN).apply {
                     addCategory(Intent.CATEGORY_LAUNCHER)
                 }
-                pm.queryIntentActivities(intent, 0).mapNotNull { resolveInfo ->
+                pm.queryIntentActivities(intent, PackageManager.MATCH_ALL).mapNotNull { resolveInfo ->
                     val label = resolveInfo.loadLabel(pm).toString()
                     val packageName = resolveInfo.activityInfo.packageName
                     val activityName = resolveInfo.activityInfo.name
