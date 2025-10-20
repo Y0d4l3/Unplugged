@@ -62,25 +62,33 @@ fun TopPager(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Text(
-                            text = if (isBatterySaverOn) "Batteriesparmodus ist aktiv" else "Batteriesparmodus ist aus",
-                            color = Color.White.copy(alpha = 0.9f),
-                            fontSize = 25.sp
-                        )
-                        Text(
-                            text = "Bitte aktiviere den Extrem Battery Saver um den Launcher am effektivsten zu nutzen. Füge deine Shortcut Apps als Ausnahme hinzu, um sie effektiv nutzen zu können",
-                            color = Color.White.copy(alpha = 0.9f),
-                            fontSize = 15.sp,
-                            textAlign = TextAlign.Center
-                        )
-                        Button(
-                            onClick = onOpenBatterySettings,
-                            modifier = Modifier.fillMaxWidth().height(50.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.White.copy(alpha = 0.2f)
+                        if (!isBatterySaverOn) {
+                            Text(
+                                text = "Batteriesparmodus ist aus",
+                                color = Color.White.copy(alpha = 0.9f),
+                                fontSize = 25.sp
                             )
-                        ) {
-                            Text("Einstellungen öffnen", color = Color.White)
+                            Text(
+                                text = "Bitte aktiviere den Extrem Battery Saver um den Launcher am effektivsten zu nutzen. Füge deine Shortcut Apps als Ausnahme hinzu, um sie effektiv nutzen zu können",
+                                color = Color.White.copy(alpha = 0.9f),
+                                fontSize = 15.sp,
+                                textAlign = TextAlign.Center
+                            )
+                            Button(
+                                onClick = onOpenBatterySettings,
+                                modifier = Modifier.fillMaxWidth().height(50.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.White.copy(alpha = 0.2f)
+                                )
+                            ) {
+                                Text("Einstellungen öffnen", color = Color.White)
+                            }
+                        } else {
+                            Text(
+                                text = "Batteriesparmodus ist aktiv",
+                                color = Color.White.copy(alpha = 0.9f),
+                                fontSize = 25.sp
+                            )
                         }
                     }
                 }
