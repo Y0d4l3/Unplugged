@@ -1,5 +1,6 @@
 package com.unplugged.launcher.ui.feature.launcher
 
+import com.unplugged.launcher.data.model.AppNotification
 import com.unplugged.launcher.data.model.LauncherApp
 
 data class LauncherUiState(
@@ -10,5 +11,6 @@ data class LauncherUiState(
     val appSlots: List<LauncherApp?> = List(12) { null },
     val showAppPicker: Boolean = false,
     val installedApps: List<LauncherApp> = emptyList(),
-    val hasNotifications: Boolean = false
+    val hasNotifications: Boolean = false,
+    val lastNotification: AppNotification? = null
 )

@@ -56,8 +56,8 @@ fun LauncherScreen(
             date = uiState.date,
             isBatterySaverOn = isBatterySaverOn,
             onOpenBatterySettings = viewModel::openBatterySettings,
-            hasNotifications = uiState.hasNotifications,
-            openNotificationAccessSettings = viewModel::openNotificationAccessSettings
+            openNotificationAccessSettings = viewModel::openNotificationAccessSettings,
+            lastNotification = uiState.lastNotification
         )
 
         BottomPager(

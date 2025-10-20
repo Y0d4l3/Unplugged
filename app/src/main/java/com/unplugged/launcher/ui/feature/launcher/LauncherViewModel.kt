@@ -57,8 +57,8 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
         }
 
         viewModelScope.launch {
-            NotificationRepository.hasNotifications.collect { hasNotifications ->
-                _uiState.update { it.copy(hasNotifications = hasNotifications) }
+            NotificationRepository.lastNotification.collect { notification ->
+                _uiState.update { it.copy(lastNotification = notification) }
             }
         }
 
