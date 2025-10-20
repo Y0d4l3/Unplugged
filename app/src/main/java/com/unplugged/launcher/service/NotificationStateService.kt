@@ -34,6 +34,10 @@ object NotificationRepository {
     fun getDismissedNotificationKeys(): Set<String> {
         return _dismissedNotificationKeys.value
     }
+
+    fun clearDismissedKeys() {
+        _dismissedNotificationKeys.value = emptySet()
+    }
 }
 
 class NotificationStateService : NotificationListenerService() {
@@ -44,6 +48,9 @@ class NotificationStateService : NotificationListenerService() {
             !dismissedKeys.contains(it.key) &&
                     NotificationRepository.whitelistedApps.value.contains(it.packageName) &&
                     it.isClearable
+        }
+        if (latestRelevantNotification == null) {
+            NotificationRepository.clearDismissedKeys()
         }
         updateRepository(latestRelevantNotification)
     }
