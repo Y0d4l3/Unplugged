@@ -7,9 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.view.WindowCompat
 import com.unplugged.launcher.ui.LauncherScreen
 import com.unplugged.launcher.ui.theme.UnpluggedTheme
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,9 +23,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-fun currentTime(): String =
-    SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
-
-fun currentDate(): String =
-    SimpleDateFormat("EEEE, dd.MM.yyyy", Locale.getDefault()).format(Date())

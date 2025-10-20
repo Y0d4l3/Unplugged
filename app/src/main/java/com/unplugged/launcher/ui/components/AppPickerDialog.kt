@@ -19,8 +19,8 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.unplugged.launcher.data.LauncherApp
-import com.unplugged.launcher.ui.util.toImageBitmap
+import com.unplugged.launcher.data.model.LauncherApp
+import com.unplugged.launcher.util.toImageBitmap
 import com.unplugged.launcher.ui.viewmodel.AppPickerViewModel
 
 @Composable

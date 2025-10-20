@@ -6,9 +6,9 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.unplugged.launcher.data.LauncherApp
-import com.unplugged.launcher.currentDate
-import com.unplugged.launcher.currentTime
+import com.unplugged.launcher.data.model.LauncherApp
+import com.unplugged.launcher.util.currentDate
+import com.unplugged.launcher.util.currentTime
 import com.unplugged.launcher.ui.components.AppPickerDialog
 import kotlinx.coroutines.delay
 import androidx.core.net.toUri

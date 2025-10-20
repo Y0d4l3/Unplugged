@@ -1,4 +1,4 @@
-package com.unplugged.launcher.ui.util
+package com.unplugged.launcher.util
 
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable

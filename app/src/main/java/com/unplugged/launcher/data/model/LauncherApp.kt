@@ -1,4 +1,4 @@
-package com.unplugged.launcher.data
+package com.unplugged.launcher.data.model
 
 import android.content.ComponentName
 import android.content.Context

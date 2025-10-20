@@ -1,7 +1,7 @@
 package com.unplugged.launcher.ui.components
 
 import androidx.compose.runtime.Composable
-import com.unplugged.launcher.data.LauncherApp
+import com.unplugged.launcher.data.model.LauncherApp
 
 @Composable
 fun AppPad(
