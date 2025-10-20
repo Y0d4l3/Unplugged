@@ -22,6 +22,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -68,6 +72,15 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
 
         val filter = IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
         app.registerReceiver(batterySaverReceiver, filter)
+
+        uiState
+            .map { it.appSlots }
+            .distinctUntilChanged()
+            .onEach { appSlots ->
+                val whitelistedPackageNames = appSlots.mapNotNull { it?.componentName?.packageName }.toSet()
+                NotificationRepository.setWhitelistedApps(whitelistedPackageNames)
+            }
+            .launchIn(viewModelScope)
     }
     private fun isBatterySaverCurrentlyOn(): Boolean {
         return powerManager.isPowerSaveMode
