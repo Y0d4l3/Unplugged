@@ -1,12 +1,16 @@
 package com.unplugged.launcher.ui.feature.launcher
 
 import android.app.Application
+import android.content.BroadcastReceiver
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.os.PowerManager
+import android.provider.Settings
 import androidx.core.graphics.drawable.toBitmap
-
 import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,6 +32,16 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private var selectedSlotIndex: Int? = null
 
+    private val powerManager = app.getSystemService(Context.POWER_SERVICE) as PowerManager
+
+    private val batterySaverReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == PowerManager.ACTION_POWER_SAVE_MODE_CHANGED) {
+                _uiState.update { it.copy(isBatterySaverOn = isBatterySaverCurrentlyOn()) }
+            }
+        }
+    }
+
     init {
         viewModelScope.launch {
             while (true) {
@@ -42,6 +56,26 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
         }
 
         loadAllInstalledApps()
+
+        _uiState.update { it.copy(isBatterySaverOn = isBatterySaverCurrentlyOn()) }
+
+        val filter = IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
+        app.registerReceiver(batterySaverReceiver, filter)
+    }
+    private fun isBatterySaverCurrentlyOn(): Boolean {
+        return powerManager.isPowerSaveMode
+    }
+
+    fun openBatterySettings() {
+        val intent = Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        app.startActivity(intent)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        app.unregisterReceiver(batterySaverReceiver)
     }
 
     private fun loadAllInstalledApps() {

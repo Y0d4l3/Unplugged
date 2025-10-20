@@ -32,7 +32,7 @@ import com.unplugged.launcher.data.model.LauncherApp
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AppAndDialerPager(
+fun BottomPager(
     modifier: Modifier = Modifier,
     bottomPagerState: PagerState,
     uiState: com.unplugged.launcher.ui.feature.launcher.LauncherUiState,

@@ -16,9 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.unplugged.launcher.ui.components.AppAndDialerPager
+import com.unplugged.launcher.ui.components.BottomPager
 import com.unplugged.launcher.ui.components.AppPickerDialog
-import com.unplugged.launcher.ui.components.TimeAndDatePager
+import com.unplugged.launcher.ui.components.TopPager
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -26,9 +26,11 @@ fun LauncherScreen(
     viewModel: LauncherViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val isBatterySaverOn = uiState.isBatterySaverOn
+
 
     val topPagerState = rememberPagerState(
-        initialPage = Int.MAX_VALUE / 2,
+        initialPage = Int.MAX_VALUE / 3,
         pageCount = { Int.MAX_VALUE }
     )
 
@@ -45,16 +47,18 @@ fun LauncherScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        TimeAndDatePager(
+        TopPager(
             modifier = Modifier
                 .weight(1f)
                 .padding(top = 10.dp),
             topPagerState = topPagerState,
             time = uiState.time,
-            date = uiState.date
+            date = uiState.date,
+            isBatterySaverOn = isBatterySaverOn,
+            onOpenBatterySettings = viewModel::openBatterySettings
         )
 
-        AppAndDialerPager(
+        BottomPager(
             modifier = Modifier.weight(2f),
             bottomPagerState = bottomPagerState,
             uiState = uiState,
