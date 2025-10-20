@@ -28,7 +28,7 @@
         </activity>
 
         <service
-            android:name=".tiles.LauncherSwitchTileService"
+            android:name=".service.LauncherSwitchTileService"
             android:exported="true"
             android:label="@string/unplugged_switcher"
             android:icon="@drawable/ic_launcher_switch"

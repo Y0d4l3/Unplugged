@@ -1,8 +1,7 @@
-package com.unplugged.launcher.tiles
+package com.unplugged.launcher.service
 
 import android.app.PendingIntent
 import android.app.role.RoleManager
-import android.app.role.RoleManager.ROLE_HOME
 import android.content.Intent
 import android.provider.Settings
 import android.service.quicksettings.Tile
@@ -12,17 +11,20 @@ class LauncherSwitchTileService : TileService() {
 
     private fun isCurrentLauncher(): Boolean {
         val roleManager = getSystemService(RoleManager::class.java)
-        return roleManager.isRoleHeld(ROLE_HOME)
+        return roleManager.isRoleHeld(RoleManager.ROLE_HOME)
     }
 
     override fun onTileAdded() {
         super.onTileAdded()
-        qsTile.updateTile()
+        qsTile?.updateTile()
     }
+
     override fun onStartListening() {
         super.onStartListening()
-        qsTile.state = if (isCurrentLauncher()) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        qsTile.updateTile()
+        qsTile?.let { tile ->
+            tile.state = if (isCurrentLauncher()) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
+            tile.updateTile()
+        }
     }
 
     override fun onStopListening() {
@@ -30,6 +32,7 @@ class LauncherSwitchTileService : TileService() {
     }
 
     override fun onClick() {
+        super.onClick()
         val intent = Intent(Settings.ACTION_HOME_SETTINGS).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
