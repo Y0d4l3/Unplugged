@@ -69,7 +69,8 @@ fun LauncherScreen(
             onDeleteClicked = viewModel::onDeleteClicked,
             onCallClicked = viewModel::onCallClicked,
             onAddAppClicked = viewModel::onAddAppClicked,
-            onLaunchApp = viewModel::onLaunchApp
+            onLaunchApp = viewModel::onLaunchApp,
+            onRemoveApp = viewModel::onRemoveApp
         )
     }
 

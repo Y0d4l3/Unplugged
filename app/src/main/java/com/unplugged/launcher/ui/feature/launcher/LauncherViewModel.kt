@@ -163,7 +163,7 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
         NotificationRepository.dismissNotification(currentNotificationKey)
 
         val serviceIntent = Intent(app, NotificationStateService::class.java).apply {
-            action = "REFRESH" // Diese Action haben wir im Service definiert
+            action = "REFRESH"
         }
         app.startService(serviceIntent)
     }
@@ -240,6 +240,19 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
                 pm.getActivityIcon(appComponent).toBitmap()
             } catch (_: Exception) {
                 null
+            }
+        }
+    }
+
+
+    fun onRemoveApp(slotIndex: Int) {
+        val newAppSlots = _uiState.value.appSlots.toMutableList()
+
+        if (slotIndex >= 0 && slotIndex < newAppSlots.size) {
+            newAppSlots[slotIndex] = null
+
+            _uiState.update {
+                it.copy(appSlots = newAppSlots)
             }
         }
     }
