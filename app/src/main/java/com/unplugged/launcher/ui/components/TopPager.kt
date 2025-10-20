@@ -68,7 +68,7 @@ fun TopPager(
                             fontSize = 25.sp
                         )
                         Text(
-                            text = "Bitte aktiviere den Extrem Battery Saver um den Launcher am effektivsten zu nutzen",
+                            text = "Bitte aktiviere den Extrem Battery Saver um den Launcher am effektivsten zu nutzen. Füge deine Shortcut Apps als Ausnahme hinzu, um sie effektiv nutzen zu können",
                             color = Color.White.copy(alpha = 0.9f),
                             fontSize = 15.sp,
                             textAlign = TextAlign.Center
