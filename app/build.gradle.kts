@@ -59,6 +59,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation("com.google.accompanist:accompanist-drawablepainter:0.37.3")
+    implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.core.ktx.v1131)
