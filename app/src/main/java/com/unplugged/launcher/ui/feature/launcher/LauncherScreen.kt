@@ -14,20 +14,18 @@ import com.unplugged.launcher.ui.components.AppAndDialerPager
 import com.unplugged.launcher.ui.components.AppPickerDialog
 import com.unplugged.launcher.ui.components.TimeAndDatePager
 
-@OptIn(ExperimentalFoundationApi::class) // Notwendig für rememberPagerState
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LauncherScreen(
     viewModel: LauncherViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    // PagerState für den oberen Pager (Uhrzeit/Datum)
     val topPagerState = rememberPagerState(
         initialPage = Int.MAX_VALUE / 2,
         pageCount = { Int.MAX_VALUE }
     )
 
-    // PagerState für den unteren Pager (Apps/Dialer)
     val bottomPagerState = rememberPagerState(
         initialPage = Int.MAX_VALUE / 2,
         pageCount = { Int.MAX_VALUE }
@@ -53,7 +51,6 @@ fun LauncherScreen(
         )
     }
 
-    // Zeigt den App-Auswahldialog bei Bedarf über allem an
     if (uiState.showAppPicker) {
         AppPickerDialog(
             appList = uiState.installedApps,
