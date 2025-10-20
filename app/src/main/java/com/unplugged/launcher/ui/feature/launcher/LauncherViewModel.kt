@@ -17,6 +17,7 @@ import androidx.lifecycle.viewModelScope
 import com.unplugged.launcher.data.SettingsManager
 import com.unplugged.launcher.data.model.LauncherApp
 import com.unplugged.launcher.service.NotificationRepository
+import com.unplugged.launcher.service.NotificationStateService
 import com.unplugged.launcher.util.currentDate
 import com.unplugged.launcher.util.currentTime
 import kotlinx.coroutines.Dispatchers
@@ -154,6 +155,17 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
         app.startActivity(intent)
+    }
+
+    fun onDismissNotification() {
+        val currentNotificationKey = _uiState.value.lastNotification?.key ?: return
+
+        NotificationRepository.dismissNotification(currentNotificationKey)
+
+        val serviceIntent = Intent(app, NotificationStateService::class.java).apply {
+            action = "REFRESH" // Diese Action haben wir im Service definiert
+        }
+        app.startService(serviceIntent)
     }
 
     override fun onCleared() {

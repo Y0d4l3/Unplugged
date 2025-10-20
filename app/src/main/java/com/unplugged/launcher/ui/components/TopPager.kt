@@ -2,10 +2,12 @@ package com.unplugged.launcher.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -33,6 +35,7 @@ fun TopPager(
     isBatterySaverOn: Boolean,
     onOpenBatterySettings: () -> Unit,
     openNotificationAccessSettings: () -> Unit,
+    onDismissNotification: () -> Unit,
     lastNotification: AppNotification?
 ) {
     val grayscaleColorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
@@ -46,7 +49,7 @@ fun TopPager(
             contentAlignment = Alignment.Center
         ) {
             when (page % 5) {
-                0 -> ""
+                0 -> { /* Platzhalter */ }
                 1 -> Box(modifier = Modifier.fillMaxSize()) {
                     Column(
                         modifier = Modifier.align(Alignment.Center),
@@ -140,54 +143,70 @@ fun TopPager(
                 }
 
                 4 -> {
-                    if (lastNotification != null) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (lastNotification != null) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 24.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Image(
-                                    painter = rememberDrawablePainter(drawable = lastNotification.appIcon),
-                                    contentDescription = lastNotification.appName,
-                                    modifier = Modifier.size(20.dp),
-                                    colorFilter = grayscaleColorFilter
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Image(
+                                        painter = rememberDrawablePainter(drawable = lastNotification.appIcon),
+                                        contentDescription = lastNotification.appName,
+                                        modifier = Modifier.size(20.dp),
+                                        colorFilter = grayscaleColorFilter
+                                    )
+                                    Text(
+                                        text = lastNotification.appName,
+                                        color = Color.White.copy(alpha = 0.7f),
+                                        fontSize = 16.sp
+                                    )
+                                }
+                                Text(
+                                    text = lastNotification.title,
+                                    color = Color.White,
+                                    fontSize = 20.sp,
+                                    textAlign = TextAlign.Center
                                 )
                                 Text(
-                                    text = lastNotification.appName,
-                                    color = Color.White.copy(alpha = 0.7f),
-                                    fontSize = 16.sp
+                                    text = lastNotification.text,
+                                    color = Color.White.copy(alpha = 0.8f),
+                                    fontSize = 16.sp,
+                                    textAlign = TextAlign.Center
                                 )
                             }
-                            Text(
-                                text = lastNotification.title,
-                                color = Color.White,
-                                fontSize = 20.sp,
-                                textAlign = TextAlign.Center
+
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Dismiss notification",
+                                tint = Color.White.copy(alpha = 0.5f),
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(top = 16.dp, end = 24.dp)
+                                    .size(24.dp)
+                                    .clickable { onDismissNotification() } // <-- Klick-Aktion hier
                             )
-                            Text(
-                                text = lastNotification.text,
-                                color = Color.White.copy(alpha = 0.8f),
-                                fontSize = 16.sp,
-                                textAlign = TextAlign.Center
+
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.MailOutline,
+                                contentDescription = "No notifications",
+                                tint = Color.White.copy(alpha = 0.3f),
+                                modifier = Modifier.size(32.dp)
                             )
                         }
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.MailOutline,
-                            contentDescription = "No notifications",
-                            tint = Color.White.copy(alpha = 0.3f),
-                            modifier = Modifier.size(32.dp)
-                        )
                     }
                 }
             }
         }
     }
 }
-

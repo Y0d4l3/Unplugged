@@ -1,6 +1,7 @@
 package com.unplugged.launcher.service
 
 import android.app.Notification
+import android.content.Intent
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import com.unplugged.launcher.data.model.AppNotification
@@ -15,6 +16,8 @@ object NotificationRepository {
     private val _whitelistedApps = MutableStateFlow<Set<String>>(emptySet())
     val whitelistedApps = _whitelistedApps.asStateFlow()
 
+    private val _dismissedNotificationKeys = MutableStateFlow<Set<String>>(emptySet())
+
     fun updateNotification(notification: AppNotification?) {
         _lastNotification.value = notification
     }
@@ -22,27 +25,46 @@ object NotificationRepository {
     fun setWhitelistedApps(packageNames: Set<String>) {
         _whitelistedApps.value = packageNames
     }
+
+    fun dismissNotification(key: String?) {
+        if (key == null) return
+        _dismissedNotificationKeys.value += key
+    }
+
+    fun getDismissedNotificationKeys(): Set<String> {
+        return _dismissedNotificationKeys.value
+    }
 }
 
 class NotificationStateService : NotificationListenerService() {
 
-    override fun onListenerConnected() {
-        super.onListenerConnected()
+    fun refreshLastNotification() {
+        val dismissedKeys = NotificationRepository.getDismissedNotificationKeys()
         val latestRelevantNotification = activeNotifications.lastOrNull {
-            NotificationRepository.whitelistedApps.value.contains(it.packageName) && it.isClearable
+            !dismissedKeys.contains(it.key) &&
+                    NotificationRepository.whitelistedApps.value.contains(it.packageName) &&
+                    it.isClearable
         }
         updateRepository(latestRelevantNotification)
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == "REFRESH") {
+            refreshLastNotification()
+        }
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+    override fun onListenerConnected() {
+        super.onListenerConnected()
+        refreshLastNotification()
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         super.onNotificationPosted(sbn)
         if (sbn == null) return
 
-        val isWhitelisted = NotificationRepository.whitelistedApps.value.contains(sbn.packageName)
-
-        if (isWhitelisted) {
-            updateRepository(sbn)
-        }
+        refreshLastNotification()
 
         val category = sbn.notification.category
         if (category != Notification.CATEGORY_CALL && category != Notification.CATEGORY_ALARM) {
@@ -52,22 +74,20 @@ class NotificationStateService : NotificationListenerService() {
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?, rankingMap: RankingMap?, reason: Int) {
         super.onNotificationRemoved(sbn, rankingMap, reason)
+
         if (sbn == null) return
 
         if (reason == REASON_LISTENER_CANCEL) {
             return
         }
-        val latestRelevantNotification = activeNotifications.lastOrNull {
-            it.isClearable && NotificationRepository.whitelistedApps.value.contains(it.packageName)
-        }
-        updateRepository(latestRelevantNotification)
+
+        refreshLastNotification()
     }
 
-    private fun updateRepository(sbn: StatusBarNotification?) {
-        if (sbn == null) {
-            NotificationRepository.updateNotification(null)
-            return
-        }
+    private fun updateRepository(sbn: StatusBarNotification?) {if (sbn == null) {
+        NotificationRepository.updateNotification(null)
+        return
+    }
 
         val isWhitelisted = NotificationRepository.whitelistedApps.value.contains(sbn.packageName)
         if (!isWhitelisted) {
@@ -75,7 +95,7 @@ class NotificationStateService : NotificationListenerService() {
         }
 
         if (!sbn.isClearable) {
-            if (activeNotifications.none { it.isClearable }) {
+            if (activeNotifications.none { it.isClearable && NotificationRepository.whitelistedApps.value.contains(it.packageName) }) {
                 NotificationRepository.updateNotification(null)
             }
             return
@@ -97,11 +117,18 @@ class NotificationStateService : NotificationListenerService() {
             val appIcon = pm.getApplicationIcon(sbn.packageName)
 
             val appNotification = AppNotification(
-                appName = appName, appIcon = appIcon, title = title, text = text
+                key = sbn.key,
+                appName = appName,
+                appIcon = appIcon,
+                title = title,
+                text = text
             )
 
             NotificationRepository.updateNotification(appNotification)
+
         } catch (_: Exception) {
+            NotificationRepository.updateNotification(null)
         }
     }
+
 }
