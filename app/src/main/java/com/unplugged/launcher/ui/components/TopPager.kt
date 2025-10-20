@@ -27,6 +27,7 @@ fun TopPager(
     date: String,
     isBatterySaverOn: Boolean,
     onOpenBatterySettings: () -> Unit,
+    openNotificationAccessSettings: () -> Unit,
     hasNotifications: Boolean
 ) {
     HorizontalPager(
@@ -37,7 +38,7 @@ fun TopPager(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            when (page % 3) {
+            when (page % 4) {
                 0 -> ""
                 1 -> Box(modifier = Modifier.fillMaxSize()) {
                     Column(
@@ -61,6 +62,7 @@ fun TopPager(
                         )
                     }
                 }
+
                 2 -> {
                     Column(
                         modifier = Modifier
@@ -72,13 +74,13 @@ fun TopPager(
                         if (!isBatterySaverOn) {
                             Text(
                                 text = "Batteriesparmodus ist aus",
-                                color = Color.White.copy(alpha = 0.9f),
-                                fontSize = 25.sp
+                                color = Color.White.copy(alpha = 0.7f),
+                                fontSize = 20.sp
                             )
                             Text(
-                                text = "Bitte aktiviere den Extrem Battery Saver um den Launcher am effektivsten zu nutzen. Füge deine Shortcut Apps als Ausnahme hinzu, um sie effektiv nutzen zu können",
-                                color = Color.White.copy(alpha = 0.9f),
-                                fontSize = 15.sp,
+                                text = "Tipp: Aktiviere den Extrem Battery Saver um den Launcher am effektivsten zu nutzen. Füge deine Shortcut Apps als Ausnahme hinzu, um sie effektiv nutzen zu können",
+                                color = Color.White.copy(alpha = 0.7f),
+                                fontSize = 14.sp,
                                 textAlign = TextAlign.Center
                             )
                             Button(
@@ -95,9 +97,37 @@ fun TopPager(
                         } else {
                             Text(
                                 text = "Batteriesparmodus ist aktiv",
-                                color = Color.White.copy(alpha = 0.9f),
-                                fontSize = 25.sp
+                                color = Color.White.copy(alpha = 0.7f),
+                                fontSize = 20.sp
                             )
+                        }
+                    }
+                }
+
+                3 -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = "Tipp: Aktiviere den Benachrichtigungszugriff, um eine Vorschau zu erhalten.",
+                            color = Color.White.copy(alpha = 0.7f),
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Button(
+                            onClick = openNotificationAccessSettings,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White.copy(alpha = 0.2f)
+                            )
+                        ) {
+                            Text("Benachrichtigungszugriff erteilen", color = Color.White)
                         }
                     }
                 }

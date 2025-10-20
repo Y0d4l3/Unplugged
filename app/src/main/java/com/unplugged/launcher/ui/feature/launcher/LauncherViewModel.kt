@@ -80,6 +80,13 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
         app.startActivity(intent)
     }
 
+    fun openNotificationAccessSettings() {
+        val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        app.startActivity(intent)
+    }
+
     override fun onCleared() {
         super.onCleared()
         app.unregisterReceiver(batterySaverReceiver)
