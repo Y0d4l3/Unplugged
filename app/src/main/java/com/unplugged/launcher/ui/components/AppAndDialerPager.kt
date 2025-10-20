@@ -66,40 +66,47 @@ fun AppGrid(
     onAddAppClicked: (Int) -> Unit,
     onLaunchApp: (LauncherApp) -> Unit
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(4),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        itemsIndexed(appSlots) { index, app ->
-            GlassKey(
-                onClick = {
-                    if (app != null) {
-                        onLaunchApp(app)
-                    } else {
-                        onAddAppClicked(index)
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+
+            modifier = Modifier.padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            userScrollEnabled = false // Das Grid soll nicht scrollen
+        ) {
+            itemsIndexed(appSlots) { index, app ->
+                GlassKey(
+                    onClick = {
+                        if (app != null) {
+                            onLaunchApp(app)
+                        } else {
+                            onAddAppClicked(index)
+                        }
                     }
-                }
-            ) {
-                if (app?.icon != null) {
-                    Image(
-                        bitmap = app.icon.asImageBitmap(),
-                        contentDescription = app.label,
-                        modifier = Modifier.size(40.dp)
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add App",
-                        tint = Color.White.copy(alpha = 0.8f),
-                        modifier = Modifier.size(40.dp)
-                    )
+                ) {
+                    if (app?.icon != null) {
+                        Image(
+                            bitmap = app.icon.asImageBitmap(),
+                            contentDescription = app.label,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add App",
+                            tint = Color.White.copy(alpha = 0.8f),
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
                 }
             }
         }
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }
 
