@@ -8,52 +8,42 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TimeAndDatePager(
     modifier: Modifier = Modifier,
-    pagerState: PagerState,
+    topPagerState: PagerState,
     time: String,
     date: String
 ) {
     HorizontalPager(
-        state = pagerState,
+        state = topPagerState,
         modifier = modifier
     ) { page ->
-        when (page % 2) {
-            0 -> TimeDisplay(time = time)
-            1 -> DateDisplay(date = date)
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            when (page % 2) {
+                0 -> GlassBox {
+                    Text(
+                        text = time,
+                        color = Color.White,
+                        fontSize = 64.sp
+                    )
+                }
+                1 -> GlassBox {
+                    Text(
+                        text = date,
+                        color = Color.White,
+                        fontSize = 24.sp
+                    )
+                }
+            }
         }
     }
 }
 
-@Composable
-private fun TimeDisplay(time: String) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = time,
-            fontSize = 86.sp,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-private fun DateDisplay(date: String) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = date,
-            fontSize = 32.sp,
-            textAlign = TextAlign.Center
-        )
-    }
-}
