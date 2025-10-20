@@ -8,41 +8,39 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unplugged.launcher.data.model.LauncherApp
-import com.unplugged.launcher.util.toImageBitmap
-import com.unplugged.launcher.ui.viewmodel.AppPickerViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun AppPickerDialog(
+    appList: List<LauncherApp>,
     onDismiss: () -> Unit,
-    onAppSelected: (LauncherApp) -> Unit,
-    viewModel: AppPickerViewModel = viewModel()
+    onAppSelected: (LauncherApp) -> Unit
 ) {
-    val apps by viewModel.apps.collectAsState()
-    val context = LocalContext.current
-
     AlertDialog(
         onDismissRequest = onDismiss,
-        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Abbrechen")
+            }
+        },
+        confirmButton = { },
         title = { Text("App auswählen") },
         text = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(400.dp)
+                    .heightIn(max = 400.dp)
             ) {
-                if (apps.isEmpty()) {
+                if (appList.isEmpty()) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -51,8 +49,11 @@ fun AppPickerDialog(
                     }
                 } else {
                     LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                        items(apps) { app ->
-                            AppItem(app = app, onAppSelected = onAppSelected, context = context)
+                        items(appList) { app ->
+                            AppPickerItem(
+                                app = app,
+                                onAppClick = { onAppSelected(app) }
+                            )
                         }
                     }
                 }
@@ -62,36 +63,40 @@ fun AppPickerDialog(
 }
 
 @Composable
-fun AppItem(
+private fun AppPickerItem(
     app: LauncherApp,
-    onAppSelected: (LauncherApp) -> Unit,
-    context: android.content.Context
+    onAppClick: () -> Unit
 ) {
-    val appIconBitmap: ImageBitmap? by produceState(
-        initialValue = null,
-        key1 = app.componentName
-    ) {
-        val drawable = app.loadIcon(context)
-        value = drawable?.toImageBitmap()
+    val context = LocalContext.current
+
+    val icon by produceState<android.graphics.Bitmap?>(initialValue = null, key1 = app.componentName) {
+        withContext(Dispatchers.IO) {
+            val result = runCatching {
+                val pm = context.packageManager
+                (pm.getActivityIcon(app.componentName) as android.graphics.drawable.BitmapDrawable).bitmap
+            }
+            value = result.getOrNull()
+        }
     }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onAppSelected(app) }
-            .padding(8.dp),
+            .clickable(onClick = onAppClick)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (appIconBitmap != null) {
-            Image(
-                painter = BitmapPainter(appIconBitmap!!),
-                contentDescription = app.label,
-                modifier = Modifier.size(32.dp)
-            )
-        } else {
-            Spacer(modifier = Modifier.size(32.dp))
+        Box(modifier = Modifier.size(40.dp), contentAlignment = Alignment.Center) {
+            if (icon != null) {
+                Image(
+                    bitmap = icon!!.asImageBitmap(),
+                    contentDescription = app.label
+                )
+            } else {
+                CircularProgressIndicator(modifier = Modifier.size(24.dp))
+            }
         }
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(app.label)
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(text = app.label)
     }
 }

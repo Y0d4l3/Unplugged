@@ -1,11 +1,11 @@
 package com.unplugged.launcher
 
+import com.unplugged.launcher.ui.feature.launcher.LauncherScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.WindowCompat
-import com.unplugged.launcher.ui.LauncherScreen
 import com.unplugged.launcher.ui.theme.UnpluggedTheme
 
 class MainActivity : ComponentActivity() {
