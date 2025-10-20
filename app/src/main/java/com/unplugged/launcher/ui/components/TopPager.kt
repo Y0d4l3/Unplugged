@@ -15,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,6 +35,8 @@ fun TopPager(
     openNotificationAccessSettings: () -> Unit,
     lastNotification: AppNotification?
 ) {
+    val grayscaleColorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
+
     HorizontalPager(
         state = topPagerState,
         modifier = modifier
@@ -151,7 +155,8 @@ fun TopPager(
                                 Image(
                                     painter = rememberDrawablePainter(drawable = lastNotification.appIcon),
                                     contentDescription = lastNotification.appName,
-                                    modifier = Modifier.size(20.dp)
+                                    modifier = Modifier.size(20.dp),
+                                    colorFilter = grayscaleColorFilter
                                 )
                                 Text(
                                     text = lastNotification.appName,
