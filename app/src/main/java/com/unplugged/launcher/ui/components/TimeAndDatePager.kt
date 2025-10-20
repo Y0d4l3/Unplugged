@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -28,20 +29,28 @@ fun TimeAndDatePager(
             contentAlignment = Alignment.Center
         ) {
             when (page % 2) {
-                0 -> GlassBox {
-                    Text(
-                        text = time,
-                        color = Color.White,
-                        fontSize = 64.sp
-                    )
+                0 -> GlassBox(
+                    modifier = modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = time,
+                            color = Color.White,
+                            fontSize = 64.sp
+                        )
+
+                        Text(
+                            text = date,
+                            color = Color.White.copy(alpha = 0.8f),
+                            fontSize = 24.sp
+                        )
+                    }
                 }
-                1 -> GlassBox {
-                    Text(
-                        text = date,
-                        color = Color.White,
-                        fontSize = 24.sp
-                    )
-                }
+
+                1 -> ""
             }
         }
     }
