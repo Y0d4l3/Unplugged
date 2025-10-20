@@ -22,6 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -66,6 +68,9 @@ fun AppGrid(
     onAddAppClicked: (Int) -> Unit,
     onLaunchApp: (LauncherApp) -> Unit
 ) {
+
+    val grayscaleColorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Bottom,
@@ -77,7 +82,7 @@ fun AppGrid(
             modifier = Modifier.padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
-            userScrollEnabled = false // Das Grid soll nicht scrollen
+            userScrollEnabled = false
         ) {
             itemsIndexed(appSlots) { index, app ->
                 GlassKey(
@@ -93,7 +98,8 @@ fun AppGrid(
                         Image(
                             bitmap = app.icon.asImageBitmap(),
                             contentDescription = app.label,
-                            modifier = Modifier.size(40.dp)
+                            modifier = Modifier.size(40.dp),
+                            colorFilter = grayscaleColorFilter
                         )
                     } else {
                         Icon(
