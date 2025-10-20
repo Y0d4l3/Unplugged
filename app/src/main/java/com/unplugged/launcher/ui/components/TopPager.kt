@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -64,10 +65,17 @@ fun TopPager(
                         Text(
                             text = if (isBatterySaverOn) "Batteriesparmodus ist aktiv" else "Batteriesparmodus ist aus",
                             color = Color.White.copy(alpha = 0.9f),
-                            fontSize = 18.sp
+                            fontSize = 25.sp
+                        )
+                        Text(
+                            text = "Bitte aktiviere den Extrem Battery Saver um den Launcher am effektivsten zu nutzen",
+                            color = Color.White.copy(alpha = 0.9f),
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Center
                         )
                         Button(
                             onClick = onOpenBatterySettings,
+                            modifier = Modifier.fillMaxWidth().height(50.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.White.copy(alpha = 0.2f)
                             )
