@@ -15,6 +15,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.unplugged.launcher.data.model.LauncherApp
+import com.unplugged.launcher.service.NotificationRepository
 import com.unplugged.launcher.util.currentDate
 import com.unplugged.launcher.util.currentTime
 import kotlinx.coroutines.Dispatchers
@@ -52,6 +53,12 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
                     )
                 }
                 delay(1000L)
+            }
+        }
+
+        viewModelScope.launch {
+            NotificationRepository.hasNotifications.collect { hasNotifications ->
+                _uiState.update { it.copy(hasNotifications = hasNotifications) }
             }
         }
 

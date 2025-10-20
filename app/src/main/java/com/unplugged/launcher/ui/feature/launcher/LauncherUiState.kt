@@ -9,5 +9,6 @@ data class LauncherUiState(
     val enteredNumber: String = "",
     val appSlots: List<LauncherApp?> = List(12) { null },
     val showAppPicker: Boolean = false,
-    val installedApps: List<LauncherApp> = emptyList()
+    val installedApps: List<LauncherApp> = emptyList(),
+    val hasNotifications: Boolean = false
 )

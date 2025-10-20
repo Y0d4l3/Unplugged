@@ -4,8 +4,11 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +26,8 @@ fun TopPager(
     time: String,
     date: String,
     isBatterySaverOn: Boolean,
-    onOpenBatterySettings: () -> Unit
+    onOpenBatterySettings: () -> Unit,
+    hasNotifications: Boolean
 ) {
     HorizontalPager(
         state = topPagerState,
@@ -35,22 +39,25 @@ fun TopPager(
         ) {
             when (page % 3) {
                 0 -> ""
-                1 -> {
+                1 -> Box(modifier = Modifier.fillMaxSize()) {
                     Column(
-                        modifier.fillMaxWidth(),
+                        modifier = Modifier.align(Alignment.Center),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Text(
-                            text = time,
-                            color = Color.White,
-                            fontSize = 64.sp
-                        )
+                        Text(text = time, color = Color.White, fontSize = 64.sp)
+                        Text(text = date, color = Color.White.copy(alpha = 0.8f), fontSize = 24.sp)
+                    }
 
-                        Text(
-                            text = date,
-                            color = Color.White.copy(alpha = 0.8f),
-                            fontSize = 24.sp
+                    if (hasNotifications) {
+                        Icon(
+                            imageVector = Icons.Default.MailOutline,
+                            contentDescription = "Unread notifications",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(top = 16.dp, end = 24.dp)
+                                .size(24.dp)
                         )
                     }
                 }
@@ -76,7 +83,9 @@ fun TopPager(
                             )
                             Button(
                                 onClick = onOpenBatterySettings,
-                                modifier = Modifier.fillMaxWidth().height(50.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color.White.copy(alpha = 0.2f)
                                 )
