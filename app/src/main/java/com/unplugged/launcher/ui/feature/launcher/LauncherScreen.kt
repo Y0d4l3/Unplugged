@@ -48,7 +48,7 @@ fun LauncherScreen(
         TimeAndDatePager(
             modifier = Modifier
                 .weight(1f)
-                .padding(top = 24.dp),
+                .padding(top = 10.dp),
             topPagerState = topPagerState,
             time = uiState.time,
             date = uiState.date

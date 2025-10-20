@@ -29,10 +29,9 @@ fun TimeAndDatePager(
             contentAlignment = Alignment.Center
         ) {
             when (page % 2) {
-                0 -> GlassBox(
-                    modifier = modifier.fillMaxWidth()
-                ) {
+                0 -> {
                     Column(
+                        modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
