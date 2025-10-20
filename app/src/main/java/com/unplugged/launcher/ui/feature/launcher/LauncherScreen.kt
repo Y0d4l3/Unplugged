@@ -76,9 +76,10 @@ fun LauncherScreen(
 
     if (uiState.showAppPicker) {
         AppPickerDialog(
-            appList = uiState.installedApps,
+            uiState = uiState,
             onDismiss = viewModel::onDismissAppPicker,
             onAppSelected = viewModel::onAppSelected,
+            onSearchQueryChanged = viewModel::onAppPickerSearchQueryChanged
         )
     }
 }

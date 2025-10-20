@@ -12,5 +12,7 @@ data class LauncherUiState(
     val showAppPicker: Boolean = false,
     val installedApps: List<LauncherApp> = emptyList(),
     val hasNotifications: Boolean = false,
-    val lastNotification: AppNotification? = null
+    val lastNotification: AppNotification? = null,
+    val appPickerSearchQuery: String = "",
+    val filteredApps: List<LauncherApp> = emptyList()
 )

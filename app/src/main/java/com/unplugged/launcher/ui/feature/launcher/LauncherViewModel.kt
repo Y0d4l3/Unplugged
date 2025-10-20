@@ -195,7 +195,25 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun onAddAppClicked(slotIndex: Int) {
         selectedSlotIndex = slotIndex
-        _uiState.update { it.copy(showAppPicker = true) }
+        _uiState.update {
+            it.copy(
+                showAppPicker = true,
+                filteredApps = it.installedApps
+            )
+        }
+    }
+
+    fun onAppPickerSearchQueryChanged(query: String) {
+        _uiState.update { it.copy(appPickerSearchQuery = query) }
+
+        val filtered = if (query.isBlank()) {
+            _uiState.value.installedApps
+        } else {
+            _uiState.value.installedApps.filter { app ->
+                app.label.contains(query, ignoreCase = true)
+            }
+        }
+        _uiState.update { it.copy(filteredApps = filtered) }
     }
 
     fun onAppSelected(chosenApp: LauncherApp) {
@@ -229,7 +247,12 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun onDismissAppPicker() {
-        _uiState.update { it.copy(showAppPicker = false) }
+        _uiState.update {
+            it.copy(
+                showAppPicker = false,
+                appPickerSearchQuery = "" // <-- NEU
+            )
+        }
         selectedSlotIndex = null
     }
 

@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
@@ -23,49 +24,51 @@ import com.unplugged.launcher.data.model.LauncherApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.core.graphics.createBitmap
+import com.unplugged.launcher.ui.feature.launcher.LauncherUiState
 
 @Composable
 fun AppPickerDialog(
-    appList: List<LauncherApp>,
+    uiState: LauncherUiState,
+    onAppSelected: (LauncherApp) -> Unit,
     onDismiss: () -> Unit,
-    onAppSelected: (LauncherApp) -> Unit
+    onSearchQueryChanged: (String) -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        title = { Text("App auswählen") },
+        text = {
+            Column(modifier = Modifier.heightIn(max = 400.dp)) {
+                OutlinedTextField(
+                    value = uiState.appPickerSearchQuery,
+                    onValueChange = onSearchQueryChanged,
+                    label = { Text("Suchen...") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    singleLine = true
+                )
+
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                    items(
+                        uiState.filteredApps,
+                        key = { it.componentName.flattenToString() }) { app ->
+                        AppPickerItem(
+                            app = app,
+                            onAppClick = { onAppSelected(app) }
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {},
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text("Abbrechen")
             }
-        },
-        confirmButton = { },
-        title = { Text("App auswählen") },
-        text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 400.dp)
-            ) {
-                if (appList.isEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
-                    LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                        items(appList) { app ->
-                            AppPickerItem(
-                                app = app,
-                                onAppClick = { onAppSelected(app) }
-                            )
-                        }
-                    }
-                }
-            }
         }
     )
 }
+
 
 @Composable
 private fun AppPickerItem(
