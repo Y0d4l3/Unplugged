@@ -1,5 +1,9 @@
 package com.unplugged.launcher.ui.components
 
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.unplugged.launcher.data.model.LauncherApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import androidx.core.graphics.createBitmap
 
 @Composable
 fun AppPickerDialog(
@@ -69,11 +74,12 @@ private fun AppPickerItem(
 ) {
     val context = LocalContext.current
 
-    val icon by produceState<android.graphics.Bitmap?>(initialValue = null, key1 = app.componentName) {
+    val icon by produceState<Bitmap?>(initialValue = null, key1 = app.componentName) {
         withContext(Dispatchers.IO) {
             val result = runCatching {
                 val pm = context.packageManager
-                (pm.getActivityIcon(app.componentName) as android.graphics.drawable.BitmapDrawable).bitmap
+                val drawable = pm.getActivityIcon(app.componentName)
+                drawableToBitmap(drawable)
             }
             value = result.getOrNull()
         }
@@ -88,6 +94,7 @@ private fun AppPickerItem(
     ) {
         Box(modifier = Modifier.size(40.dp), contentAlignment = Alignment.Center) {
             if (icon != null) {
+                Log.d("test", "$icon")
                 Image(
                     bitmap = icon!!.asImageBitmap(),
                     contentDescription = app.label
@@ -99,4 +106,23 @@ private fun AppPickerItem(
         Spacer(modifier = Modifier.width(16.dp))
         Text(text = app.label)
     }
+}
+
+private fun drawableToBitmap(drawable: Drawable): Bitmap {
+    if (drawable is BitmapDrawable) {
+        if (drawable.bitmap != null) {
+            return drawable.bitmap
+        }
+    }
+
+    val bitmap = if (drawable.intrinsicWidth <= 0 || drawable.intrinsicHeight <= 0) {
+        createBitmap(1, 1)
+    } else {
+        createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
+    }
+
+    val canvas = android.graphics.Canvas(bitmap)
+    drawable.setBounds(0, 0, canvas.width, canvas.height)
+    drawable.draw(canvas)
+    return bitmap
 }
