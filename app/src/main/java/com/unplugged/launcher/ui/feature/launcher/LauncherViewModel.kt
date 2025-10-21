@@ -10,6 +10,7 @@ import com.unplugged.launcher.data.model.LauncherApp
 import com.unplugged.launcher.data.repository.AppRepository
 import com.unplugged.launcher.data.repository.DeviceStateRepository
 import com.unplugged.launcher.data.repository.NotificationRepository
+import com.unplugged.launcher.domain.usecase.apps.GetAppSlots
 import com.unplugged.launcher.domain.usecase.notifications.NotificationHandler
 import com.unplugged.launcher.util.currentDate
 import com.unplugged.launcher.util.currentTime
@@ -17,7 +18,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -35,6 +35,7 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
     private val deviceStateRepository = DeviceStateRepository(app)
     private val notificationHandler = NotificationHandler(app)
     private val settingsManager = SettingsManager(app)
+    private val getAppSlotsUseCase = GetAppSlots(AppRepository(app), SettingsManager(app))
 
     init {
         loadInitialState()
@@ -71,27 +72,12 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private fun loadInitialState() {
         viewModelScope.launch {
-            val allApps = appRepository.getAllInstalledApps()
-            _uiState.update { it.copy(installedApps = allApps) }
+            val appSlots = getAppSlotsUseCase()
 
-            val savedPackageNames = settingsManager.favoriteAppsFlow.first()
-
-            val savedApps = savedPackageNames.mapNotNull { packageName ->
-                allApps.find { it.componentName.packageName == packageName }
-            }
-
-            val savedAppsWithIcons = savedApps.map { app ->
-                app.copy(icon = appRepository.loadIconForApp(app.componentName))
-            }
-
-            val newSlots = MutableList<LauncherApp?>(12) { null }
-            savedAppsWithIcons.forEachIndexed { index, appInfo ->
-                if (index < newSlots.size) {
-                    newSlots[index] = appInfo
-                }
-            }
-
-            _uiState.update { it.copy(appSlots = newSlots) }
+            _uiState.update { it.copy(
+                installedApps = appRepository.getAllInstalledApps(),
+                appSlots = appSlots
+            ) }
         }
     }
 
