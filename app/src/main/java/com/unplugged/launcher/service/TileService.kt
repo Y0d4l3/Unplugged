@@ -7,7 +7,7 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import com.unplugged.launcher.util.isMyAppDefaultLauncher
 
-class LauncherSwitchTileService : TileService() {
+class TileService : TileService() {
 
     override fun onTileAdded() {
         super.onTileAdded()
@@ -23,10 +23,6 @@ class LauncherSwitchTileService : TileService() {
             tile.state = if (isMyAppDefaultLauncher(this)) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
             tile.updateTile()
         }
-    }
-
-    override fun onStopListening() {
-        super.onStopListening()
     }
 
     override fun onClick() {
