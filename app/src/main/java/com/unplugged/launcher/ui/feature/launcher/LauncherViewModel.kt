@@ -8,7 +8,8 @@ import com.unplugged.launcher.data.model.LauncherApp
 import com.unplugged.launcher.data.repository.AppRepository
 import com.unplugged.launcher.data.repository.DeviceStateRepository
 import com.unplugged.launcher.data.repository.NotificationRepository
-import com.unplugged.launcher.domain.usecase.apps.GetAppSlots
+import com.unplugged.launcher.domain.usecase.app_pad.AppPadManager
+import com.unplugged.launcher.domain.usecase.app_picker.AppPickerManager
 import com.unplugged.launcher.domain.usecase.dialer.DialerManager
 import com.unplugged.launcher.domain.usecase.notifications.NotificationHandler
 import com.unplugged.launcher.util.currentDate
@@ -34,8 +35,9 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     private val deviceStateRepository = DeviceStateRepository(app)
     private val notificationHandler = NotificationHandler(app)
     private val settingsManager = SettingsManager(app)
-    private val getAppSlotsUseCase = GetAppSlots(AppRepository(app), SettingsManager(app))
     private val dialerManager = DialerManager(app)
+    private val appPickerManager = AppPickerManager()
+    private val appPadManager = AppPadManager(appRepository, settingsManager)
 
     init {
         loadInitialState()
@@ -60,6 +62,24 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
             }
             .launchIn(viewModelScope)
 
+        appPickerManager.pickerState
+            .onEach { pickerState ->
+                _uiState.update {
+                    it.copy(
+                        showAppPicker = pickerState.isVisible,
+                        appPickerSearchQuery = pickerState.searchQuery,
+                        filteredApps = pickerState.filteredApps
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+
+        appPadManager.appSlots
+            .onEach { slots ->
+                _uiState.update { it.copy(appSlots = slots) }
+            }
+            .launchIn(viewModelScope)
+
         NotificationRepository.lastNotification
             .onEach { notification -> _uiState.update { it.copy(lastNotification = notification) } }
             .launchIn(viewModelScope)
@@ -78,12 +98,9 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun loadInitialState() {
         viewModelScope.launch {
-            val appSlots = getAppSlotsUseCase()
+            appPadManager.loadInitialSlots()
 
-            _uiState.update { it.copy(
-                installedApps = appRepository.getAllInstalledApps(),
-                appSlots = appSlots
-            ) }
+            _uiState.update { it.copy(installedApps = appRepository.getAllInstalledApps()) }
         }
     }
 
@@ -129,44 +146,25 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
 
     fun onAddAppClicked(slotIndex: Int) {
         selectedSlotIndex = slotIndex
-        _uiState.update {
-            it.copy(
-                showAppPicker = true,
-                filteredApps = it.installedApps
-            )
-        }
+        appPickerManager.openPicker(allApps = _uiState.value.installedApps)
     }
 
     fun onAppPickerSearchQueryChanged(query: String) {
-        _uiState.update { it.copy(appPickerSearchQuery = query) }
+        appPickerManager.onSearchQueryChanged(query)
+    }
 
-        val filtered = if (query.isBlank()) {
-            _uiState.value.installedApps
-        } else {
-            _uiState.value.installedApps.filter { app ->
-                app.label.contains(query, ignoreCase = true)
-            }
-        }
-        _uiState.update { it.copy(filteredApps = filtered) }
+    fun onDismissAppPicker() {
+        appPickerManager.closePicker()
+        selectedSlotIndex = null
     }
 
     fun onAppSelected(chosenApp: LauncherApp) {
         viewModelScope.launch {
-            val appWithIcon = chosenApp.copy(
-                icon = appRepository.loadIconForApp(chosenApp.componentName)
-            )
-
             selectedSlotIndex?.let { index ->
-                val newAppSlots = _uiState.value.appSlots.toMutableList().also {
-                    it[index] = appWithIcon
-                }
-                _uiState.update {
-                    it.copy(
-                        appSlots = newAppSlots,
-                        showAppPicker = false
-                    )
-                }
+                appPadManager.addAppToSlot(chosenApp, index)
             }
+
+            appPickerManager.closePicker()
             selectedSlotIndex = null
         }
     }
@@ -175,26 +173,8 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
         appRepository.launchApp(appToLaunch.componentName)
     }
 
-    fun onDismissAppPicker() {
-        _uiState.update {
-            it.copy(
-                showAppPicker = false,
-                appPickerSearchQuery = "" // <-- NEU
-            )
-        }
-        selectedSlotIndex = null
-    }
-
 
     fun onRemoveApp(slotIndex: Int) {
-        val newAppSlots = _uiState.value.appSlots.toMutableList()
-
-        if (slotIndex >= 0 && slotIndex < newAppSlots.size) {
-            newAppSlots[slotIndex] = null
-
-            _uiState.update {
-                it.copy(appSlots = newAppSlots)
-            }
-        }
+        appPadManager.removeAppFromSlot(slotIndex)
     }
 }
