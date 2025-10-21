@@ -1,28 +1,26 @@
 package com.unplugged.launcher.service
 
 import android.app.PendingIntent
-import android.app.role.RoleManager
 import android.content.Intent
 import android.provider.Settings
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
+import com.unplugged.launcher.util.isMyAppDefaultLauncher
 
 class LauncherSwitchTileService : TileService() {
 
-    private fun isCurrentLauncher(): Boolean {
-        val roleManager = getSystemService(RoleManager::class.java)
-        return roleManager.isRoleHeld(RoleManager.ROLE_HOME)
-    }
-
     override fun onTileAdded() {
         super.onTileAdded()
-        qsTile?.updateTile()
+        qsTile?.let { tile ->
+            tile.state = if (isMyAppDefaultLauncher(this)) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
+            tile.updateTile()
+        }
     }
 
     override fun onStartListening() {
         super.onStartListening()
         qsTile?.let { tile ->
-            tile.state = if (isCurrentLauncher()) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
+            tile.state = if (isMyAppDefaultLauncher(this)) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
             tile.updateTile()
         }
     }
