@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.unplugged.launcher.domain.launcher.HomeScreenViewModel
+import com.unplugged.launcher.domain.home_screen.HomeScreenViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

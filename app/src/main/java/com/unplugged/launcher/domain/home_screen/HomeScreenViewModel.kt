@@ -1,4 +1,4 @@
-package com.unplugged.launcher.domain.launcher
+package com.unplugged.launcher.domain.home_screen
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

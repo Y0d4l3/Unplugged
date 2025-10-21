@@ -1,4 +1,4 @@
-package com.unplugged.launcher.domain.launcher
+package com.unplugged.launcher.domain.home_screen
 
 import com.unplugged.launcher.data.model.AppNotification
 import com.unplugged.launcher.data.model.LauncherApp

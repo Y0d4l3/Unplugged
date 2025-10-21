@@ -33,7 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.unplugged.launcher.data.model.LauncherApp
-import com.unplugged.launcher.domain.launcher.HomeScreenUiState
+import com.unplugged.launcher.domain.home_screen.HomeScreenUiState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
