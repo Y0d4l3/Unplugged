@@ -1,4 +1,4 @@
-package com.unplugged.launcher.domain.usecase.app_pad
+package com.unplugged.launcher.domain.app_pad
 
 import com.unplugged.launcher.data.SettingsManager
 import com.unplugged.launcher.data.model.LauncherApp

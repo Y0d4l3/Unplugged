@@ -1,4 +1,4 @@
-package com.unplugged.launcher.domain.usecase.notifications
+package com.unplugged.launcher.domain.notifications
 
 import android.content.ComponentName
 import android.content.Context

@@ -1,4 +1,4 @@
-package com.unplugged.launcher.domain.usecase.app_picker
+package com.unplugged.launcher.domain.app_picker
 
 import com.unplugged.launcher.data.model.LauncherApp
 import kotlinx.coroutines.flow.MutableStateFlow

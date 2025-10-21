@@ -1,4 +1,4 @@
-package com.unplugged.launcher.domain.usecase.dialer
+package com.unplugged.launcher.domain.dialer
 
 import android.content.Context
 import android.content.Intent

@@ -8,10 +8,10 @@ import com.unplugged.launcher.data.model.LauncherApp
 import com.unplugged.launcher.data.repository.AppRepository
 import com.unplugged.launcher.data.repository.DeviceStateRepository
 import com.unplugged.launcher.data.repository.NotificationRepository
-import com.unplugged.launcher.domain.usecase.app_pad.AppPadManager
-import com.unplugged.launcher.domain.usecase.app_picker.AppPickerManager
-import com.unplugged.launcher.domain.usecase.dialer.DialerManager
-import com.unplugged.launcher.domain.usecase.notifications.NotificationHandler
+import com.unplugged.launcher.domain.app_pad.AppPadManager
+import com.unplugged.launcher.domain.app_picker.AppPickerManager
+import com.unplugged.launcher.domain.dialer.DialerManager
+import com.unplugged.launcher.domain.notifications.NotificationHandler
 import com.unplugged.launcher.util.currentDate
 import com.unplugged.launcher.util.currentTime
 import kotlinx.coroutines.delay
@@ -40,7 +40,6 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     private val appPadManager = AppPadManager(appRepository, settingsManager)
 
     init {
-        loadInitialState()
         observeDeviceState()
         notificationHandler.toggleNotificationService(enable = true)
 
@@ -94,9 +93,7 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
                 NotificationRepository.setWhitelistedApps(packageNames)
             }
             .launchIn(viewModelScope)
-    }
 
-    private fun loadInitialState() {
         viewModelScope.launch {
             appPadManager.loadInitialSlots()
 
