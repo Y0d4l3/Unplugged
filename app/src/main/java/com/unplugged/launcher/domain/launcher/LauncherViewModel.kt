@@ -1,4 +1,4 @@
-package com.unplugged.launcher.ui.feature.launcher
+package com.unplugged.launcher.domain.launcher
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

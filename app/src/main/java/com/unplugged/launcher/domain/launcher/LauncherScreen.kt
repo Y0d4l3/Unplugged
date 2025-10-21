@@ -1,4 +1,4 @@
-package com.unplugged.launcher.ui.feature.launcher
+package com.unplugged.launcher.domain.launcher
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background

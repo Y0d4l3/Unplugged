@@ -24,7 +24,7 @@ import com.unplugged.launcher.data.model.LauncherApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.core.graphics.createBitmap
-import com.unplugged.launcher.ui.feature.launcher.LauncherUiState
+import com.unplugged.launcher.domain.launcher.LauncherUiState
 
 @Composable
 fun AppPickerDialog(
