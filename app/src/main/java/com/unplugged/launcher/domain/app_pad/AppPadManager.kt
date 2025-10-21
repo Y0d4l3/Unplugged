@@ -1,6 +1,6 @@
 package com.unplugged.launcher.domain.app_pad
 
-import com.unplugged.launcher.data.SettingsManager
+import com.unplugged.launcher.data.source.local.SettingsManager
 import com.unplugged.launcher.data.model.LauncherApp
 import com.unplugged.launcher.data.repository.AppRepository
 import kotlinx.coroutines.CoroutineScope

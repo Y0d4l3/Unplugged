@@ -3,7 +3,7 @@ package com.unplugged.launcher.domain.home_screen
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.unplugged.launcher.data.SettingsManager
+import com.unplugged.launcher.data.source.local.SettingsManager
 import com.unplugged.launcher.data.model.LauncherApp
 import com.unplugged.launcher.data.repository.AppRepository
 import com.unplugged.launcher.data.repository.DeviceStateRepository

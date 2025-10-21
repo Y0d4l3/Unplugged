@@ -1,4 +1,4 @@
-package com.unplugged.launcher.data
+package com.unplugged.launcher.data.source.local
 
 import android.content.Context
 import androidx.datastore.core.DataStore
