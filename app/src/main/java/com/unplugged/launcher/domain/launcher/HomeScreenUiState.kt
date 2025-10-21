@@ -3,7 +3,7 @@ package com.unplugged.launcher.domain.launcher
 import com.unplugged.launcher.data.model.AppNotification
 import com.unplugged.launcher.data.model.LauncherApp
 
-data class LauncherUiState(
+data class HomeScreenUiState(
     val time: String = "",
     val date: String = "",
     val isBatterySaverOn: Boolean = false,

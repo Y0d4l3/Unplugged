@@ -33,14 +33,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.unplugged.launcher.data.model.LauncherApp
-import com.unplugged.launcher.domain.launcher.LauncherUiState
+import com.unplugged.launcher.domain.launcher.HomeScreenUiState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BottomPager(
     modifier: Modifier = Modifier,
     bottomPagerState: PagerState,
-    uiState: LauncherUiState,
+    uiState: HomeScreenUiState,
     onNumberClicked: (String) -> Unit,
     onDeleteClicked: () -> Unit,
     onCallClicked: () -> Unit,

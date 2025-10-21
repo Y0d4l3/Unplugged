@@ -16,12 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.unplugged.launcher.domain.launcher.LauncherViewModel
+import com.unplugged.launcher.domain.launcher.HomeScreenViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LauncherScreen(
-    viewModel: LauncherViewModel = viewModel()
+fun HomeScreen(
+    viewModel: HomeScreenViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isBatterySaverOn = uiState.isBatterySaverOn

@@ -13,11 +13,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.unplugged.launcher.data.model.LauncherApp
-import com.unplugged.launcher.domain.launcher.LauncherUiState
+import com.unplugged.launcher.domain.launcher.HomeScreenUiState
 
 @Composable
 fun AppPickerDialog(
-    uiState: LauncherUiState,
+    uiState: HomeScreenUiState,
     onAppSelected: (LauncherApp) -> Unit,
     onDismiss: () -> Unit,
     onSearchQueryChanged: (String) -> Unit

@@ -4,7 +4,7 @@ import android.content.ComponentName
 import android.content.pm.PackageManager
 import com.unplugged.launcher.service.NotificationStateService
 
-import com.unplugged.launcher.ui.components.LauncherScreen
+import com.unplugged.launcher.ui.components.HomeScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             UnpluggedTheme {
-                LauncherScreen()
+                HomeScreen()
             }
         }
     }

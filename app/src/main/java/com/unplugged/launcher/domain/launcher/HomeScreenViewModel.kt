@@ -24,9 +24,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LauncherViewModel(app: Application) : AndroidViewModel(app) {
+class HomeScreenViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val _uiState = MutableStateFlow(LauncherUiState())
+    private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState = _uiState.asStateFlow()
 
     private var selectedSlotIndex: Int? = null
