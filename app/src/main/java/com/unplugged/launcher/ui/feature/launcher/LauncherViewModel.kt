@@ -1,10 +1,7 @@
 package com.unplugged.launcher.ui.feature.launcher
 
 import android.app.Application
-import android.content.ComponentName
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.provider.Settings
 import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,8 +9,8 @@ import com.unplugged.launcher.data.SettingsManager
 import com.unplugged.launcher.data.model.LauncherApp
 import com.unplugged.launcher.data.repository.AppRepository
 import com.unplugged.launcher.data.repository.DeviceStateRepository
-import com.unplugged.launcher.service.NotificationRepository
-import com.unplugged.launcher.service.NotificationStateService
+import com.unplugged.launcher.data.repository.NotificationRepository
+import com.unplugged.launcher.domain.usecase.notifications.NotificationHandler
 import com.unplugged.launcher.util.currentDate
 import com.unplugged.launcher.util.currentTime
 import kotlinx.coroutines.delay
@@ -36,12 +33,13 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private val appRepository = AppRepository(app)
     private val deviceStateRepository = DeviceStateRepository(app)
-
+    private val notificationHandler = NotificationHandler(app)
     private val settingsManager = SettingsManager(app)
 
     init {
         loadInitialState()
         observeDeviceState()
+        notificationHandler.toggleNotificationService(enable = true)
 
         viewModelScope.launch {
             while (true) {
@@ -55,49 +53,20 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
             }
         }
 
-        viewModelScope.launch {
-            NotificationRepository.lastNotification.collect { notification ->
-                _uiState.update { it.copy(lastNotification = notification) }
-            }
-        }
+        NotificationRepository.lastNotification
+            .onEach { notification -> _uiState.update { it.copy(lastNotification = notification) } }
+            .launchIn(viewModelScope)
 
-        viewModelScope.launch {
-            uiState
-                .map { it.appSlots }
-                .distinctUntilChanged()
-                .onEach { appSlots ->
-                    val packageNames =
-                        appSlots.mapNotNull { it?.componentName?.packageName }.toSet()
-                    settingsManager.saveFavoriteApps(packageNames)
-                    NotificationRepository.setWhitelistedApps(packageNames)
-                }
-                .launchIn(viewModelScope)
-        }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        deviceStateRepository.cleanUp()
-        toggleNotificationService(enable = false)
-    }
-
-    private fun observeDeviceState() {
-        deviceStateRepository.isBatterySaverOn
-            .onEach { isSaverOn ->
-                _uiState.update { it.copy(isBatterySaverOn = isSaverOn) }
+        uiState
+            .map { it.appSlots }
+            .distinctUntilChanged()
+            .onEach { appSlots ->
+                val packageNames =
+                    appSlots.mapNotNull { it?.componentName?.packageName }.toSet()
+                settingsManager.saveFavoriteApps(packageNames)
+                NotificationRepository.setWhitelistedApps(packageNames)
             }
             .launchIn(viewModelScope)
-    }
-
-    private fun toggleNotificationService(enable: Boolean) {
-        val context = getApplication<Application>().applicationContext
-        val componentName = ComponentName(context, NotificationStateService::class.java)
-        val newState = if (enable) {
-            PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-        } else {
-            PackageManager.COMPONENT_ENABLED_STATE_DISABLED
-        }
-        context.packageManager.setComponentEnabledSetting(componentName, newState, PackageManager.DONT_KILL_APP)
     }
 
     private fun loadInitialState() {
@@ -126,27 +95,32 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        deviceStateRepository.cleanUp()
+        notificationHandler.toggleNotificationService(enable = false)
+    }
+
+    private fun observeDeviceState() {
+        deviceStateRepository.isBatterySaverOn
+            .onEach { isSaverOn ->
+                _uiState.update { it.copy(isBatterySaverOn = isSaverOn) }
+            }
+            .launchIn(viewModelScope)
+    }
 
     fun openBatterySettings() {
         deviceStateRepository.openBatterySettings()
     }
 
     fun openNotificationAccessSettings() {
-        val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-        app.startActivity(intent)
+        notificationHandler.openNotificationAccessSettings()
     }
 
     fun onDismissNotification() {
-        val currentNotificationKey = _uiState.value.lastNotification?.key ?: return
-
-        NotificationRepository.dismissNotification(currentNotificationKey)
-
-        val serviceIntent = Intent(app, NotificationStateService::class.java).apply {
-            action = "REFRESH"
-        }
-        app.startService(serviceIntent)
+        val currentKey = _uiState.value.lastNotification?.key ?: return
+        NotificationRepository.dismissNotification(currentKey)
+        notificationHandler.refreshNotifications()
     }
 
     fun onNumberClicked(digit: String) {

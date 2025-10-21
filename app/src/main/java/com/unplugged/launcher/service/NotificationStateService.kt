@@ -5,41 +5,9 @@ import android.content.Intent
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import com.unplugged.launcher.data.model.AppNotification
+import com.unplugged.launcher.data.repository.NotificationRepository
 import com.unplugged.launcher.util.isMyAppDefaultLauncher
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
-
-object NotificationRepository {
-    private val _lastNotification = MutableStateFlow<AppNotification?>(null)
-    val lastNotification = _lastNotification.asStateFlow()
-
-    private val _whitelistedApps = MutableStateFlow<Set<String>>(emptySet())
-    val whitelistedApps = _whitelistedApps.asStateFlow()
-
-    private val _dismissedNotificationKeys = MutableStateFlow<Set<String>>(emptySet())
-
-    fun updateNotification(notification: AppNotification?) {
-        _lastNotification.value = notification
-    }
-
-    fun setWhitelistedApps(packageNames: Set<String>) {
-        _whitelistedApps.value = packageNames
-    }
-
-    fun dismissNotification(key: String?) {
-        if (key == null) return
-        _dismissedNotificationKeys.value += key
-    }
-
-    fun getDismissedNotificationKeys(): Set<String> {
-        return _dismissedNotificationKeys.value
-    }
-
-    fun clearDismissedKeys() {
-        _dismissedNotificationKeys.value = emptySet()
-    }
-}
 
 class NotificationStateService : NotificationListenerService() {
 
