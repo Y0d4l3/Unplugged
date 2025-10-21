@@ -1,5 +1,9 @@
 package com.unplugged.launcher
 
+import android.content.ComponentName
+import android.content.pm.PackageManager
+import com.unplugged.launcher.service.NotificationStateService
+
 import com.unplugged.launcher.ui.feature.launcher.LauncherScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -21,5 +25,20 @@ class MainActivity : ComponentActivity() {
                 LauncherScreen()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        toggleNotificationService(enable = true)
+    }
+
+    private fun toggleNotificationService(enable: Boolean) {
+        val componentName = ComponentName(this, NotificationStateService::class.java)
+        val newState = if (enable) {
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+        } else {
+            PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+        }
+        packageManager.setComponentEnabledSetting(componentName, newState, PackageManager.DONT_KILL_APP)
     }
 }

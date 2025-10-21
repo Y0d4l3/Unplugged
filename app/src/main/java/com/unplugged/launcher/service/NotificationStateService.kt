@@ -5,6 +5,7 @@ import android.content.Intent
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import com.unplugged.launcher.data.model.AppNotification
+import com.unplugged.launcher.util.isMyAppDefaultLauncher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -71,13 +72,16 @@ class NotificationStateService : NotificationListenerService() {
         super.onNotificationPosted(sbn)
         if (sbn == null) return
 
-        refreshLastNotification()
+        if (isMyAppDefaultLauncher(applicationContext)) {
+            refreshLastNotification()
 
-        val category = sbn.notification.category
-        if (category != Notification.CATEGORY_CALL && category != Notification.CATEGORY_ALARM) {
-            cancelNotification(sbn.key)
+            val category = sbn.notification.category
+            if (category != Notification.CATEGORY_CALL && category != Notification.CATEGORY_ALARM) {
+                cancelNotification(sbn.key)
+            }
         }
     }
+
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?, rankingMap: RankingMap?, reason: Int) {
         super.onNotificationRemoved(sbn, rankingMap, reason)

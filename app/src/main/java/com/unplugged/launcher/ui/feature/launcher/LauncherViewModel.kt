@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.PowerManager
 import android.provider.Settings
+import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
@@ -91,6 +92,22 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        toggleNotificationService(enable = false)
+    }
+
+    private fun toggleNotificationService(enable: Boolean) {
+        val context = getApplication<Application>().applicationContext
+        val componentName = ComponentName(context, NotificationStateService::class.java)
+        val newState = if (enable) {
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+        } else {
+            PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+        }
+        context.packageManager.setComponentEnabledSetting(componentName, newState, PackageManager.DONT_KILL_APP)
+    }
+
     private fun loadInitialState() {
         viewModelScope.launch {
             val allApps = getAllInstalledApps()
@@ -167,12 +184,6 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
         }
         app.startService(serviceIntent)
     }
-
-    override fun onCleared() {
-        super.onCleared()
-        app.unregisterReceiver(batterySaverReceiver)
-    }
-
 
     fun onNumberClicked(digit: String) {
         _uiState.update { it.copy(enteredNumber = it.enteredNumber + digit) }
