@@ -1,13 +1,9 @@
 package com.unplugged.launcher.ui.feature.launcher
 
 import android.app.Application
-import android.content.BroadcastReceiver
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.os.PowerManager
 import android.provider.Settings
 import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
@@ -15,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.unplugged.launcher.data.SettingsManager
 import com.unplugged.launcher.data.model.LauncherApp
 import com.unplugged.launcher.data.repository.AppRepository
+import com.unplugged.launcher.data.repository.DeviceStateRepository
 import com.unplugged.launcher.service.NotificationRepository
 import com.unplugged.launcher.service.NotificationStateService
 import com.unplugged.launcher.util.currentDate
@@ -38,21 +35,13 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
     private var selectedSlotIndex: Int? = null
 
     private val appRepository = AppRepository(app)
-
-    private val powerManager = app.getSystemService(Context.POWER_SERVICE) as PowerManager
-
-    private val batterySaverReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == PowerManager.ACTION_POWER_SAVE_MODE_CHANGED) {
-                _uiState.update { it.copy(isBatterySaverOn = isBatterySaverCurrentlyOn()) }
-            }
-        }
-    }
+    private val deviceStateRepository = DeviceStateRepository(app)
 
     private val settingsManager = SettingsManager(app)
 
     init {
         loadInitialState()
+        observeDeviceState()
 
         viewModelScope.launch {
             while (true) {
@@ -72,10 +61,6 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
             }
         }
 
-        _uiState.update { it.copy(isBatterySaverOn = isBatterySaverCurrentlyOn()) }
-        val filter = IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
-        app.registerReceiver(batterySaverReceiver, filter)
-
         viewModelScope.launch {
             uiState
                 .map { it.appSlots }
@@ -92,7 +77,16 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
 
     override fun onCleared() {
         super.onCleared()
+        deviceStateRepository.cleanUp()
         toggleNotificationService(enable = false)
+    }
+
+    private fun observeDeviceState() {
+        deviceStateRepository.isBatterySaverOn
+            .onEach { isSaverOn ->
+                _uiState.update { it.copy(isBatterySaverOn = isSaverOn) }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun toggleNotificationService(enable: Boolean) {
@@ -133,15 +127,8 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
 
-    private fun isBatterySaverCurrentlyOn(): Boolean {
-        return powerManager.isPowerSaveMode
-    }
-
     fun openBatterySettings() {
-        val intent = Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        app.startActivity(intent)
+        deviceStateRepository.openBatterySettings()
     }
 
     fun openNotificationAccessSettings() {
