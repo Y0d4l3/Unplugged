@@ -7,21 +7,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.os.PowerManager
 import android.provider.Settings
-import android.util.Log
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.unplugged.launcher.data.SettingsManager
 import com.unplugged.launcher.data.model.LauncherApp
+import com.unplugged.launcher.data.repository.AppRepository
 import com.unplugged.launcher.service.NotificationRepository
 import com.unplugged.launcher.service.NotificationStateService
 import com.unplugged.launcher.util.currentDate
 import com.unplugged.launcher.util.currentTime
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,7 +29,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
 
@@ -40,6 +36,8 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
     val uiState = _uiState.asStateFlow()
 
     private var selectedSlotIndex: Int? = null
+
+    private val appRepository = AppRepository(app)
 
     private val powerManager = app.getSystemService(Context.POWER_SERVICE) as PowerManager
 
@@ -110,7 +108,7 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private fun loadInitialState() {
         viewModelScope.launch {
-            val allApps = getAllInstalledApps()
+            val allApps = appRepository.getAllInstalledApps()
             _uiState.update { it.copy(installedApps = allApps) }
 
             val savedPackageNames = settingsManager.favoriteAppsFlow.first()
@@ -120,7 +118,7 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
             }
 
             val savedAppsWithIcons = savedApps.map { app ->
-                app.copy(icon = loadIconForApp(app.componentName))
+                app.copy(icon = appRepository.loadIconForApp(app.componentName))
             }
 
             val newSlots = MutableList<LauncherApp?>(12) { null }
@@ -131,27 +129,6 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
             }
 
             _uiState.update { it.copy(appSlots = newSlots) }
-        }
-    }
-
-    private suspend fun getAllInstalledApps(): List<LauncherApp> {
-        return withContext(Dispatchers.IO) {
-            val pm = app.packageManager
-            val mainIntent = Intent(Intent.ACTION_MAIN).apply {
-                addCategory(Intent.CATEGORY_LAUNCHER)
-            }
-            pm.queryIntentActivities(mainIntent, PackageManager.MATCH_ALL)
-                .mapNotNull { resolveInfo ->
-                    val activityInfo = resolveInfo.activityInfo
-                    if (activityInfo.packageName.isNullOrBlank() || activityInfo.name.isNullOrBlank()) {
-                        return@mapNotNull null
-                    }
-                    LauncherApp(
-                        label = resolveInfo.loadLabel(pm).toString(),
-                        componentName = ComponentName(activityInfo.packageName, activityInfo.name)
-                    )
-                }
-                .sortedBy { it.label.lowercase() }
         }
     }
 
@@ -230,7 +207,7 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
     fun onAppSelected(chosenApp: LauncherApp) {
         viewModelScope.launch {
             val appWithIcon = chosenApp.copy(
-                icon = loadIconForApp(chosenApp.componentName)
+                icon = appRepository.loadIconForApp(chosenApp.componentName)
             )
 
             selectedSlotIndex?.let { index ->
@@ -249,12 +226,7 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun onLaunchApp(appToLaunch: LauncherApp) {
-        val intent =
-            app.packageManager.getLaunchIntentForPackage(appToLaunch.componentName.packageName)
-        intent?.let {
-            it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            app.startActivity(it)
-        }
+        appRepository.launchApp(appToLaunch.componentName)
     }
 
     fun onDismissAppPicker() {
@@ -265,17 +237,6 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
             )
         }
         selectedSlotIndex = null
-    }
-
-    private suspend fun loadIconForApp(appComponent: ComponentName): Bitmap? {
-        return withContext(Dispatchers.IO) {
-            try {
-                val pm = app.packageManager
-                pm.getActivityIcon(appComponent).toBitmap()
-            } catch (_: Exception) {
-                null
-            }
-        }
     }
 
 
