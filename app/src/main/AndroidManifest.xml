@@ -41,7 +41,6 @@
             android:name=".service.TileService"
             android:exported="true"
             android:label="@string/unplugged_switcher"
-            android:icon="@drawable/ic_launcher_switch"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
