@@ -18,16 +18,19 @@ class AppPickerManager {
 
     private var allInstalledApps: List<LauncherApp> = emptyList()
 
-    fun openPicker(allApps: List<LauncherApp>) {
-        this.allInstalledApps = allApps
+    fun setAllApps(apps: List<LauncherApp>) {
+        this.allInstalledApps = apps
+    }
+
+    fun openPicker() {
         _pickerState.update {
             it.copy(
                 isVisible = true,
-                filteredApps = allApps,
-                searchQuery = ""
+                filteredApps = allInstalledApps
             )
         }
     }
+
 
     fun closePicker() {
         _pickerState.value = AppPickerState()

@@ -12,24 +12,14 @@ import com.unplugged.launcher.domain.app_pad.AppPadManager
 import com.unplugged.launcher.domain.app_picker.AppPickerManager
 import com.unplugged.launcher.domain.dialer.DialerManager
 import com.unplugged.launcher.domain.notifications.NotificationHandler
-import com.unplugged.launcher.util.currentDate
-import com.unplugged.launcher.util.currentTime
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class HomeScreenViewModel(app: Application) : AndroidViewModel(app) {
-
-    private val _uiState = MutableStateFlow(HomeScreenUiState())
-    val uiState = _uiState.asStateFlow()
-
-    private var selectedSlotIndex: Int? = null
 
     private val appRepository = AppRepository(app)
     private val deviceStateRepository = DeviceStateRepository(app)
@@ -37,82 +27,48 @@ class HomeScreenViewModel(app: Application) : AndroidViewModel(app) {
     private val settingsManager = SettingsManager(app)
     private val dialerManager = DialerManager(app)
     private val appPickerManager = AppPickerManager()
-    private val appPadManager = AppPadManager(appRepository, settingsManager)
+    private val appPadManager = AppPadManager(appRepository, settingsManager, viewModelScope)
+
+    private val getHomeScreenUiStateUseCase = GetHomeScreenUiStateUseCase(
+        appPadManager, appPickerManager, dialerManager, deviceStateRepository
+    )
+
+    val uiState: StateFlow<HomeScreenUiState> = getHomeScreenUiStateUseCase()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = HomeScreenUiState()
+        )
+
+    private var selectedSlotIndex: Int? = null
 
     init {
-        observeDeviceState()
-        notificationHandler.toggleNotificationService(enable = true)
+        loadInitialData()
+        observeAndPersistFavoriteApps()
+    }
 
+    private fun loadInitialData() {
         viewModelScope.launch {
-            while (true) {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        time = currentTime(),
-                        date = currentDate()
-                    )
-                }
-                delay(1000L)
-            }
+            val allApps = appRepository.getAllInstalledApps()
+            appPickerManager.setAllApps(allApps)
         }
+        notificationHandler.toggleNotificationService(enable = true)
+    }
 
-        dialerManager.enteredNumber
-            .onEach { number ->
-                _uiState.update { it.copy(enteredNumber = number) }
-            }
-            .launchIn(viewModelScope)
-
-        appPickerManager.pickerState
-            .onEach { pickerState ->
-                _uiState.update {
-                    it.copy(
-                        showAppPicker = pickerState.isVisible,
-                        appPickerSearchQuery = pickerState.searchQuery,
-                        filteredApps = pickerState.filteredApps
-                    )
-                }
-            }
-            .launchIn(viewModelScope)
-
+    private fun observeAndPersistFavoriteApps() {
         appPadManager.appSlots
-            .onEach { slots ->
-                _uiState.update { it.copy(appSlots = slots) }
-            }
-            .launchIn(viewModelScope)
-
-        NotificationRepository.lastNotification
-            .onEach { notification -> _uiState.update { it.copy(lastNotification = notification) } }
-            .launchIn(viewModelScope)
-
-        uiState
-            .map { it.appSlots }
-            .distinctUntilChanged()
             .onEach { appSlots ->
-                val packageNames =
-                    appSlots.mapNotNull { it?.componentName?.packageName }.toSet()
+                val packageNames = appSlots.mapNotNull { it?.componentName?.packageName }.toSet()
                 settingsManager.saveFavoriteApps(packageNames)
                 NotificationRepository.setWhitelistedApps(packageNames)
             }
             .launchIn(viewModelScope)
-
-        viewModelScope.launch {
-            appPadManager.loadInitialSlots()
-
-            _uiState.update { it.copy(installedApps = appRepository.getAllInstalledApps()) }
-        }
     }
 
     override fun onCleared() {
         super.onCleared()
         deviceStateRepository.cleanUp()
         notificationHandler.toggleNotificationService(enable = false)
-    }
-
-    private fun observeDeviceState() {
-        deviceStateRepository.isBatterySaverOn
-            .onEach { isSaverOn ->
-                _uiState.update { it.copy(isBatterySaverOn = isSaverOn) }
-            }
-            .launchIn(viewModelScope)
     }
 
     fun openBatterySettings() {
@@ -124,9 +80,8 @@ class HomeScreenViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun onDismissNotification() {
-        val currentKey = _uiState.value.lastNotification?.key ?: return
+        val currentKey = uiState.value.lastNotification?.key ?: return
         NotificationRepository.dismissNotification(currentKey)
-        notificationHandler.refreshNotifications()
     }
 
     fun onNumberClicked(digit: String) {
@@ -143,7 +98,7 @@ class HomeScreenViewModel(app: Application) : AndroidViewModel(app) {
 
     fun onAddAppClicked(slotIndex: Int) {
         selectedSlotIndex = slotIndex
-        appPickerManager.openPicker(allApps = _uiState.value.installedApps)
+        appPickerManager.openPicker()
     }
 
     fun onAppPickerSearchQueryChanged(query: String) {
@@ -160,7 +115,6 @@ class HomeScreenViewModel(app: Application) : AndroidViewModel(app) {
             selectedSlotIndex?.let { index ->
                 appPadManager.addAppToSlot(chosenApp, index)
             }
-
             appPickerManager.closePicker()
             selectedSlotIndex = null
         }
@@ -169,7 +123,6 @@ class HomeScreenViewModel(app: Application) : AndroidViewModel(app) {
     fun onLaunchApp(appToLaunch: LauncherApp) {
         appRepository.launchApp(appToLaunch.componentName)
     }
-
 
     fun onRemoveApp(slotIndex: Int) {
         appPadManager.removeAppFromSlot(slotIndex)

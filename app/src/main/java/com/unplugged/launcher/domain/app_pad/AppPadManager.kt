@@ -3,20 +3,29 @@ package com.unplugged.launcher.domain.app_pad
 import com.unplugged.launcher.data.SettingsManager
 import com.unplugged.launcher.data.model.LauncherApp
 import com.unplugged.launcher.data.repository.AppRepository
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class AppPadManager(
     private val appRepository: AppRepository,
-    private val settingsManager: SettingsManager
+    private val settingsManager: SettingsManager,
+    scope: CoroutineScope
 ) {
 
     private val _appSlots = MutableStateFlow<List<LauncherApp?>>(List(12) { null })
     val appSlots = _appSlots.asStateFlow()
 
-    suspend fun loadInitialSlots() {
+    init {
+        scope.launch {
+            loadInitialSlots()
+        }
+    }
+
+    private suspend fun loadInitialSlots() {
         val allApps = appRepository.getAllInstalledApps()
         val savedPackageNames = settingsManager.favoriteAppsFlow.first()
         val savedApps = savedPackageNames.mapNotNull { packageName ->
