@@ -49,7 +49,7 @@ fun TopPager(
             contentAlignment = Alignment.Center
         ) {
             when (page % 5) {
-                0 -> { /* Platzhalter */ }
+                0 -> {}
                 1 -> Box(modifier = Modifier.fillMaxSize()) {
                     Column(
                         modifier = Modifier.align(Alignment.Center),
@@ -193,7 +193,7 @@ fun TopPager(
                                     .align(Alignment.TopEnd)
                                     .padding(top = 16.dp, end = 24.dp)
                                     .size(24.dp)
-                                    .clickable { onDismissNotification() } // <-- Klick-Aktion hier
+                                    .clickable { onDismissNotification() }
                             )
 
                         } else {

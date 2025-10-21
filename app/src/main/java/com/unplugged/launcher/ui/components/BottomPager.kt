@@ -147,7 +147,6 @@ fun Dialer(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ) {
-        // Die Anzeige für die Nummer bleibt unverändert
         Box(
             modifier = Modifier
                 .fillMaxWidth()

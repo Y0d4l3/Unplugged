@@ -1,4 +1,4 @@
-package com.unplugged.launcher.domain.launcher
+package com.unplugged.launcher.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -16,9 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.unplugged.launcher.ui.components.BottomPager
-import com.unplugged.launcher.ui.components.AppPickerDialog
-import com.unplugged.launcher.ui.components.TopPager
+import com.unplugged.launcher.domain.launcher.LauncherViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
