@@ -1,8 +1,6 @@
 package com.unplugged.launcher.ui.feature.launcher
 
 import android.app.Application
-import android.content.Intent
-import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.unplugged.launcher.data.SettingsManager
@@ -11,6 +9,7 @@ import com.unplugged.launcher.data.repository.AppRepository
 import com.unplugged.launcher.data.repository.DeviceStateRepository
 import com.unplugged.launcher.data.repository.NotificationRepository
 import com.unplugged.launcher.domain.usecase.apps.GetAppSlots
+import com.unplugged.launcher.domain.usecase.dialer.DialerManager
 import com.unplugged.launcher.domain.usecase.notifications.NotificationHandler
 import com.unplugged.launcher.util.currentDate
 import com.unplugged.launcher.util.currentTime
@@ -24,7 +23,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
+class LauncherViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _uiState = MutableStateFlow(LauncherUiState())
     val uiState = _uiState.asStateFlow()
@@ -36,6 +35,7 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
     private val notificationHandler = NotificationHandler(app)
     private val settingsManager = SettingsManager(app)
     private val getAppSlotsUseCase = GetAppSlots(AppRepository(app), SettingsManager(app))
+    private val dialerManager = DialerManager(app)
 
     init {
         loadInitialState()
@@ -53,6 +53,12 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
                 delay(1000L)
             }
         }
+
+        dialerManager.enteredNumber
+            .onEach { number ->
+                _uiState.update { it.copy(enteredNumber = number) }
+            }
+            .launchIn(viewModelScope)
 
         NotificationRepository.lastNotification
             .onEach { notification -> _uiState.update { it.copy(lastNotification = notification) } }
@@ -110,22 +116,15 @@ class LauncherViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun onNumberClicked(digit: String) {
-        _uiState.update { it.copy(enteredNumber = it.enteredNumber + digit) }
+        dialerManager.addDigit(digit)
     }
 
     fun onDeleteClicked() {
-        _uiState.update { it.copy(enteredNumber = it.enteredNumber.dropLast(1)) }
+        dialerManager.deleteLastDigit()
     }
 
     fun onCallClicked() {
-        val number = _uiState.value.enteredNumber
-        if (number.isNotEmpty()) {
-            val intent = Intent(Intent.ACTION_DIAL).apply {
-                data = "tel:$number".toUri()
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-            app.startActivity(intent)
-        }
+        dialerManager.dialCurrentNumber()
     }
 
     fun onAddAppClicked(slotIndex: Int) {
