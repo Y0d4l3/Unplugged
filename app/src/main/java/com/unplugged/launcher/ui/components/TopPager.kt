@@ -9,10 +9,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MailOutline
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,13 +30,8 @@ fun TopPager(
     topPagerState: PagerState,
     time: String,
     date: String,
-    isBatterySaverOn: Boolean,
-    onOpenBatterySettings: () -> Unit,
-    openNotificationAccessSettings: () -> Unit,
     onDismissNotification: () -> Unit,
     lastNotification: AppNotification?,
-    areNotificationsEnabled: Boolean,
-    onToggleNotifications: (Boolean) -> Unit,
 ) {
     val grayscaleColorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
 
@@ -51,9 +43,8 @@ fun TopPager(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            when (page % 6) {
-                0 -> {}
-                1 -> Box(modifier = Modifier.fillMaxSize()) {
+            when (page % 3) {
+                0 -> Box(modifier = Modifier.fillMaxSize()) {
                     Column(
                         modifier = Modifier.align(Alignment.Center),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -76,76 +67,7 @@ fun TopPager(
                     }
                 }
 
-                2 -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        if (!isBatterySaverOn) {
-                            Text(
-                                text = "Batteriesparmodus ist aus",
-                                color = Color.White.copy(alpha = 0.7f),
-                                fontSize = 20.sp
-                            )
-                            Text(
-                                text = "Tipp: Aktiviere den Extrem Battery Saver um den Launcher am effektivsten zu nutzen. Füge deine Shortcut Apps als Ausnahme hinzu, um sie effektiv nutzen zu können",
-                                color = Color.White.copy(alpha = 0.7f),
-                                fontSize = 14.sp,
-                                textAlign = TextAlign.Center
-                            )
-                            Button(
-                                onClick = onOpenBatterySettings,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White.copy(alpha = 0.2f)
-                                )
-                            ) {
-                                Text("Einstellungen öffnen", color = Color.White)
-                            }
-                        } else {
-                            Text(
-                                text = "Batteriesparmodus ist aktiv",
-                                color = Color.White.copy(alpha = 0.7f),
-                                fontSize = 20.sp
-                            )
-                        }
-                    }
-                }
-
-                3 -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Text(
-                            text = "Tipp: Aktiviere den Benachrichtigungszugriff, um eine Vorschau zu erhalten.",
-                            color = Color.White.copy(alpha = 0.7f),
-                            fontSize = 14.sp,
-                            textAlign = TextAlign.Center
-                        )
-                        Button(
-                            onClick = openNotificationAccessSettings,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.White.copy(alpha = 0.2f)
-                            )
-                        ) {
-                            Text("Benachrichtigungszugriff erteilen", color = Color.White)
-                        }
-                    }
-                }
-
-                4 -> {
+                1 -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -209,26 +131,7 @@ fun TopPager(
                         }
                     }
                 }
-                5 -> {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "Push-Benachrichtigungen",
-                            color = Color.White,
-                            fontSize = 16.sp
-                        )
-                        Switch(
-                            checked = areNotificationsEnabled,
-                            onCheckedChange = onToggleNotifications
-                            // Optional: Farben für den Switch anpassen
-                        )
-                    }
-                }
+                2 -> {}
             }
         }
     }

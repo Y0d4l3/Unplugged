@@ -19,7 +19,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -29,42 +32,88 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.unplugged.launcher.data.model.LauncherApp
 import com.unplugged.launcher.domain.home_screen.HomeScreenUiState
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BottomPager(
-    modifier: Modifier = Modifier,
-    bottomPagerState: PagerState,
-    uiState: HomeScreenUiState,
-    onNumberClicked: (String) -> Unit,
-    onDeleteClicked: () -> Unit,
-    onCallClicked: () -> Unit,
-    onAddAppClicked: (Int) -> Unit,
-    onLaunchApp: (LauncherApp) -> Unit,
-    onRemoveApp: (Int) -> Unit,
+private fun SettingsPage(
+    isBatterySaverOn: Boolean,
+    onOpenBatterySettings: () -> Unit,
+    openNotificationAccessSettings: () -> Unit,
+    areNotificationsEnabled: Boolean,
+    onToggleNotifications: (Boolean) -> Unit
 ) {
-    HorizontalPager(
-        state = bottomPagerState,
-        modifier = modifier
-    ) { page ->
-        when (page % 2) {
-            0 -> AppGrid(
-                appSlots = uiState.appSlots,
-                onAddAppClicked = onAddAppClicked,
-                onLaunchApp = onLaunchApp,
-                onRemoveApp = onRemoveApp
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterVertically)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "Push-Benachrichtigungen", color = Color.White, fontSize = 16.sp)
+            Switch(
+                checked = areNotificationsEnabled,
+                onCheckedChange = onToggleNotifications
             )
-            1 -> Dialer(
-                enteredNumber = uiState.enteredNumber,
-                onNumberClicked = onNumberClicked,
-                onDeleteClicked = onDeleteClicked,
-                onCallClicked = onCallClicked
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            if (!isBatterySaverOn) {
+                Text(
+                    text = "Tipp: Für die beste Erfahrung den extremen Batteriesparmodus aktivieren.",
+                    color = Color.White.copy(alpha = 0.7f),
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center
+                )
+                Button(
+                    onClick = onOpenBatterySettings,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.2f))
+                ) {
+                    Text("Einstellungen öffnen", color = Color.White)
+                }
+            } else {
+                Text(
+                    text = "Batteriesparmodus ist aktiv",
+                    color = Color.Green.copy(alpha = 0.8f),
+                    fontSize = 16.sp
+                )
+            }
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "Tipp: Benachrichtigungszugriff erteilen, um eine Vorschau im Launcher zu erhalten.",
+                color = Color.White.copy(alpha = 0.7f),
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center
             )
+            Button(
+                onClick = openNotificationAccessSettings,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.2f))
+            ) {
+                Text("Zugriff erteilen", color = Color.White)
+            }
         }
     }
 }
@@ -245,5 +294,55 @@ fun Dialer(
             }
         }
         Spacer(modifier = Modifier.height(20.dp))
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun BottomPager(
+    modifier: Modifier = Modifier,
+    bottomPagerState: PagerState,
+    uiState: HomeScreenUiState,
+    onNumberClicked: (String) -> Unit,
+    onDeleteClicked: () -> Unit,
+    onCallClicked: () -> Unit,
+    onAddAppClicked: (Int) -> Unit,
+    onLaunchApp: (LauncherApp) -> Unit,
+    onRemoveApp: (Int) -> Unit,
+    isBatterySaverOn: Boolean,
+    onOpenBatterySettings: () -> Unit,
+    openNotificationAccessSettings: () -> Unit,
+    areNotificationsEnabled: Boolean,
+    onToggleNotifications: (Boolean) -> Unit
+) {
+    HorizontalPager(
+        state = bottomPagerState,
+        modifier = modifier
+    ) { page ->
+        when (page % 3) {
+            0 -> AppGrid(
+                appSlots = uiState.appSlots,
+                onAddAppClicked = onAddAppClicked,
+                onLaunchApp = onLaunchApp,
+                onRemoveApp = onRemoveApp
+            )
+
+            1 -> Dialer(
+                enteredNumber = uiState.enteredNumber,
+                onNumberClicked = onNumberClicked,
+                onDeleteClicked = onDeleteClicked,
+                onCallClicked = onCallClicked
+            )
+
+            2 -> {
+                SettingsPage(
+                    isBatterySaverOn = isBatterySaverOn,
+                    onOpenBatterySettings = onOpenBatterySettings,
+                    openNotificationAccessSettings = openNotificationAccessSettings,
+                    areNotificationsEnabled = areNotificationsEnabled,
+                    onToggleNotifications = onToggleNotifications
+                )
+            }
+        }
     }
 }

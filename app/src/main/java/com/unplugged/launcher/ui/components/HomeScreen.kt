@@ -52,13 +52,8 @@ fun HomeScreen(
             topPagerState = topPagerState,
             time = uiState.time,
             date = uiState.date,
-            isBatterySaverOn = isBatterySaverOn,
-            onOpenBatterySettings = viewModel::openBatterySettings,
-            openNotificationAccessSettings = viewModel::openNotificationAccessSettings,
             lastNotification = uiState.lastNotification,
             onDismissNotification = viewModel::onDismissNotification,
-            areNotificationsEnabled = uiState.areNotificationsEnabled,
-            onToggleNotifications = viewModel::onToggleNotifications
         )
 
         BottomPager(
@@ -70,7 +65,12 @@ fun HomeScreen(
             onCallClicked = viewModel::onCallClicked,
             onAddAppClicked = viewModel::onAddAppClicked,
             onLaunchApp = viewModel::onLaunchApp,
-            onRemoveApp = viewModel::onRemoveApp
+            onRemoveApp = viewModel::onRemoveApp,
+            isBatterySaverOn = isBatterySaverOn,
+            onOpenBatterySettings = viewModel::openBatterySettings,
+            openNotificationAccessSettings = viewModel::openNotificationAccessSettings,
+            areNotificationsEnabled = uiState.areNotificationsEnabled,
+            onToggleNotifications = viewModel::onToggleNotifications
         )
     }
 
