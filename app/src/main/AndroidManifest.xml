@@ -9,6 +9,9 @@
         </intent>
     </queries>
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:theme="@style/Theme.Unplugged"
         android:label="@string/app_name"

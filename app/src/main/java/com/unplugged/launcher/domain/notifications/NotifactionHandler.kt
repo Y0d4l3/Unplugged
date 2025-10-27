@@ -25,11 +25,4 @@ class NotificationHandler(private val context: Context) {
         }
         context.startActivity(intent)
     }
-
-    fun refreshNotifications() {
-        val serviceIntent = Intent(context, NotificationStateService::class.java).apply {
-            action = "REFRESH"
-        }
-        context.startService(serviceIntent)
-    }
 }

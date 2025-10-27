@@ -14,5 +14,6 @@ data class HomeScreenUiState(
     val hasNotifications: Boolean = false,
     val lastNotification: AppNotification? = null,
     val appPickerSearchQuery: String = "",
-    val filteredApps: List<LauncherApp> = emptyList()
+    val filteredApps: List<LauncherApp> = emptyList(),
+    val areNotificationsEnabled: Boolean = true
 )

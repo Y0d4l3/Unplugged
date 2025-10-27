@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import com.unplugged.launcher.data.repository.DeviceStateRepository
 import com.unplugged.launcher.data.repository.NotificationRepository
+import com.unplugged.launcher.data.source.local.SettingsManager
 import com.unplugged.launcher.domain.app_pad.AppPadManager
 import com.unplugged.launcher.domain.app_pad.ScreenStateReceiver
 import com.unplugged.launcher.domain.app_picker.AppPickerManager
@@ -23,7 +24,8 @@ class GetHomeScreenUiStateUseCase(
     private val appPadManager: AppPadManager,
     private val appPickerManager: AppPickerManager,
     private val dialerManager: DialerManager,
-    private val deviceStateRepository: DeviceStateRepository
+    private val deviceStateRepository: DeviceStateRepository,
+    private val settingsManager: SettingsManager
 ) {
     private val timeTickerFlow = flow {
         while (true) {
@@ -47,6 +49,7 @@ class GetHomeScreenUiStateUseCase(
             dialerManager.enteredNumber,
             deviceStateRepository.isBatterySaverOn,
             NotificationRepository.lastNotification,
+            settingsManager.showPushNotificationsFlow,
             timeTickerFlow
         )
 
@@ -56,6 +59,7 @@ class GetHomeScreenUiStateUseCase(
             val enteredNumber = values[2] as String
             val isBatterySaverOn = values[3] as Boolean
             val lastNotification = values[4] as? com.unplugged.launcher.data.model.AppNotification
+            val areNotificationsEnabled = values[5] as Boolean
 
             HomeScreenUiState(
                 appSlots = appSlots.map { it as? com.unplugged.launcher.data.model.LauncherApp },
@@ -65,6 +69,7 @@ class GetHomeScreenUiStateUseCase(
                 enteredNumber = enteredNumber,
                 isBatterySaverOn = isBatterySaverOn,
                 lastNotification = lastNotification,
+                areNotificationsEnabled = areNotificationsEnabled,
                 time = currentTime(),
                 date = currentDate()
             )

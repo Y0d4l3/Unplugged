@@ -2,7 +2,9 @@ package com.unplugged.launcher.data.source.local
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences    import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -12,16 +14,30 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 
 class SettingsManager(private val context: Context) {
 
-    private val favoriteAppsKey = stringSetPreferencesKey("favorite_app_slots")
+    private object PreferencesKeys {
+        val FAVORITE_APPS = stringSetPreferencesKey("favorite_app_slots")
+        val SHOW_PUSH_NOTIFICATIONS = booleanPreferencesKey("show_push_notifications")
+    }
 
     val favoriteAppsFlow: Flow<Set<String>> = context.dataStore.data
         .map { preferences ->
-            preferences[favoriteAppsKey] ?: emptySet()
+            preferences[PreferencesKeys.FAVORITE_APPS] ?: emptySet()
+        }
+
+    val showPushNotificationsFlow: Flow<Boolean> = context.dataStore.data
+        .map { preferences ->
+            preferences[PreferencesKeys.SHOW_PUSH_NOTIFICATIONS] ?: true
         }
 
     suspend fun saveFavoriteApps(packageNames: Set<String>) {
         context.dataStore.edit { settings ->
-            settings[favoriteAppsKey] = packageNames
+            settings[PreferencesKeys.FAVORITE_APPS] = packageNames
+        }
+    }
+
+    suspend fun setShowPushNotifications(show: Boolean) {
+        context.dataStore.edit { settings ->
+            settings[PreferencesKeys.SHOW_PUSH_NOTIFICATIONS] = show
         }
     }
 }

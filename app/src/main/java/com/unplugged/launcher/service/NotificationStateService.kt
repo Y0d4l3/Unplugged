@@ -1,93 +1,65 @@
 package com.unplugged.launcher.service
 
 import android.app.Notification
-import android.content.Intent
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import com.unplugged.launcher.data.model.AppNotification
 import com.unplugged.launcher.data.repository.NotificationRepository
+import com.unplugged.launcher.data.source.local.SettingsManager
 import com.unplugged.launcher.util.isMyAppDefaultLauncher
-
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class NotificationStateService : NotificationListenerService() {
 
-    fun refreshLastNotification() {
-        val dismissedKeys = NotificationRepository.getDismissedNotificationKeys()
-        val latestRelevantNotification = activeNotifications.lastOrNull {
-            !dismissedKeys.contains(it.key) &&
-                    NotificationRepository.whitelistedApps.value.contains(it.packageName) &&
-                    it.isClearable
-        }
-        if (latestRelevantNotification == null) {
-            NotificationRepository.clearDismissedKeys()
-        }
-        updateRepository(latestRelevantNotification)
-    }
+    private lateinit var settingsManager: SettingsManager
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action == "REFRESH") {
-            refreshLastNotification()
-        }
-        return super.onStartCommand(intent, flags, startId)
-    }
-
-    override fun onListenerConnected() {
-        super.onListenerConnected()
-        refreshLastNotification()
+    override fun onCreate() {
+        super.onCreate()
+        settingsManager = SettingsManager(applicationContext)
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         super.onNotificationPosted(sbn)
-        if (sbn == null) return
+        sbn ?: return
 
-        if (isMyAppDefaultLauncher(applicationContext)) {
-            refreshLastNotification()
+        if (!isMyAppDefaultLauncher(applicationContext)) return
 
-            val category = sbn.notification.category
-            if (category != Notification.CATEGORY_CALL && category != Notification.CATEGORY_ALARM) {
+        val excludedCategories = listOf(Notification.CATEGORY_CALL, Notification.CATEGORY_ALARM)
+        if (sbn.notification.category in excludedCategories) {
+            return
+        }
+
+        val isWhitelisted = NotificationRepository.whitelistedApps.value.contains(sbn.packageName)
+        if (!isWhitelisted) {
+            cancelNotification(sbn.key)
+            return
+        }
+
+        processNotification(sbn)
+
+        scope.launch {
+            val arePushNotificationsEnabled = settingsManager.showPushNotificationsFlow.first()
+            if (!arePushNotificationsEnabled) {
                 cancelNotification(sbn.key)
             }
         }
     }
 
-
-    override fun onNotificationRemoved(sbn: StatusBarNotification?, rankingMap: RankingMap?, reason: Int) {
-        super.onNotificationRemoved(sbn, rankingMap, reason)
-
-        if (sbn == null) return
-
-        if (reason == REASON_LISTENER_CANCEL) {
-            return
-        }
-
-        refreshLastNotification()
-    }
-
-    private fun updateRepository(sbn: StatusBarNotification?) {if (sbn == null) {
-        NotificationRepository.updateNotification(null)
-        return
-    }
-
-        val isWhitelisted = NotificationRepository.whitelistedApps.value.contains(sbn.packageName)
-        if (!isWhitelisted) {
-            return
-        }
-
+    private fun processNotification(sbn: StatusBarNotification) {
         if (!sbn.isClearable) {
-            if (activeNotifications.none { it.isClearable && NotificationRepository.whitelistedApps.value.contains(it.packageName) }) {
-                NotificationRepository.updateNotification(null)
-            }
             return
         }
 
-        val notification = sbn.notification
-        val extras = notification.extras
+        val extras = sbn.notification.extras
         val title = extras.getString(Notification.EXTRA_TITLE) ?: ""
         val text = extras.getCharSequence(Notification.EXTRA_TEXT)?.toString() ?: ""
-
-        if (title.isBlank() && text.isBlank()) {
-            return
-        }
+        if (title.isBlank() && text.isBlank()) return
 
         val pm = applicationContext.packageManager
         try {
@@ -110,4 +82,25 @@ class NotificationStateService : NotificationListenerService() {
         }
     }
 
+    override fun onNotificationRemoved(
+        sbn: StatusBarNotification?,
+        rankingMap: RankingMap?,
+        reason: Int
+    ) {
+        super.onNotificationRemoved(sbn, rankingMap, reason)
+        sbn ?: return
+
+        if (reason == REASON_LISTENER_CANCEL) {
+            return
+        }
+
+        if (NotificationRepository.lastNotification.value?.key == sbn.key) {
+            NotificationRepository.updateNotification(null)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        scope.cancel()
+    }
 }

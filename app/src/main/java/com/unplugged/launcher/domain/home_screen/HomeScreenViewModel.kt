@@ -1,6 +1,10 @@
 package com.unplugged.launcher.domain.home_screen
 
 import android.app.Application
+import android.content.Context
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.unplugged.launcher.data.source.local.SettingsManager
@@ -12,6 +16,7 @@ import com.unplugged.launcher.domain.app_pad.AppPadManager
 import com.unplugged.launcher.domain.app_picker.AppPickerManager
 import com.unplugged.launcher.domain.dialer.DialerManager
 import com.unplugged.launcher.domain.notifications.NotificationHandler
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -23,14 +28,16 @@ class HomeScreenViewModel(app: Application) : AndroidViewModel(app) {
 
     private val appRepository = AppRepository(app)
     private val deviceStateRepository = DeviceStateRepository(app)
-    private val notificationHandler = NotificationHandler(app)
     private val settingsManager = SettingsManager(app)
+    private val notificationHandler = NotificationHandler(app)
     private val dialerManager = DialerManager(app)
     private val appPickerManager = AppPickerManager()
     private val appPadManager = AppPadManager(appRepository, settingsManager, viewModelScope)
+    private val vibrator: Vibrator? =
+        (app.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager)?.defaultVibrator
 
     private val getHomeScreenUiStateUseCase = GetHomeScreenUiStateUseCase(
-        appPadManager, appPickerManager, dialerManager, deviceStateRepository
+        appPadManager, appPickerManager, dialerManager, deviceStateRepository, settingsManager
     )
 
     val uiState: StateFlow<HomeScreenUiState> = getHomeScreenUiStateUseCase(getApplication())
@@ -80,8 +87,11 @@ class HomeScreenViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun onDismissNotification() {
-        val currentKey = uiState.value.lastNotification?.key ?: return
-        NotificationRepository.dismissNotification(currentKey)
+        val notificationToDismiss = uiState.value.lastNotification
+        if (notificationToDismiss != null) {
+            NotificationRepository.dismissNotification(notificationToDismiss.key)
+            NotificationRepository.updateNotification(null)
+        }
     }
 
     fun onNumberClicked(digit: String) {
@@ -121,10 +131,20 @@ class HomeScreenViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun onLaunchApp(appToLaunch: LauncherApp) {
-        appRepository.launchApp(appToLaunch.componentName)
+        vibrator?.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE))
+        viewModelScope.launch {
+            delay(500L)
+            appRepository.launchApp(appToLaunch.componentName)
+        }
     }
 
     fun onRemoveApp(slotIndex: Int) {
         appPadManager.removeAppFromSlot(slotIndex)
+    }
+
+    fun onToggleNotifications(isEnabled: Boolean) {
+        viewModelScope.launch {
+            settingsManager.setShowPushNotifications(isEnabled)
+        }
     }
 }

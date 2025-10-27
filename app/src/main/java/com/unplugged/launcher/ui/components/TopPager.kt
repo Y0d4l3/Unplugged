@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,7 +37,9 @@ fun TopPager(
     onOpenBatterySettings: () -> Unit,
     openNotificationAccessSettings: () -> Unit,
     onDismissNotification: () -> Unit,
-    lastNotification: AppNotification?
+    lastNotification: AppNotification?,
+    areNotificationsEnabled: Boolean,
+    onToggleNotifications: (Boolean) -> Unit,
 ) {
     val grayscaleColorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
 
@@ -48,7 +51,7 @@ fun TopPager(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            when (page % 5) {
+            when (page % 6) {
                 0 -> {}
                 1 -> Box(modifier = Modifier.fillMaxSize()) {
                     Column(
@@ -204,6 +207,26 @@ fun TopPager(
                                 modifier = Modifier.size(32.dp)
                             )
                         }
+                    }
+                }
+                5 -> {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Push-Benachrichtigungen",
+                            color = Color.White,
+                            fontSize = 16.sp
+                        )
+                        Switch(
+                            checked = areNotificationsEnabled,
+                            onCheckedChange = onToggleNotifications
+                            // Optional: Farben für den Switch anpassen
+                        )
                     }
                 }
             }

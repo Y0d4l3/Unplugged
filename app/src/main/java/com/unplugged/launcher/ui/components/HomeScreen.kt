@@ -56,7 +56,9 @@ fun HomeScreen(
             onOpenBatterySettings = viewModel::openBatterySettings,
             openNotificationAccessSettings = viewModel::openNotificationAccessSettings,
             lastNotification = uiState.lastNotification,
-            onDismissNotification = viewModel::onDismissNotification
+            onDismissNotification = viewModel::onDismissNotification,
+            areNotificationsEnabled = uiState.areNotificationsEnabled,
+            onToggleNotifications = viewModel::onToggleNotifications
         )
 
         BottomPager(
