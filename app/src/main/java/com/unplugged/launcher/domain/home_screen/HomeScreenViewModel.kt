@@ -33,7 +33,7 @@ class HomeScreenViewModel(app: Application) : AndroidViewModel(app) {
         appPadManager, appPickerManager, dialerManager, deviceStateRepository
     )
 
-    val uiState: StateFlow<HomeScreenUiState> = getHomeScreenUiStateUseCase()
+    val uiState: StateFlow<HomeScreenUiState> = getHomeScreenUiStateUseCase(getApplication())
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),

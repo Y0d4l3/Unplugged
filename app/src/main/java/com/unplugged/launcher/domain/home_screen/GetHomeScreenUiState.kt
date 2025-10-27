@@ -1,16 +1,23 @@
 package com.unplugged.launcher.domain.home_screen
 
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import com.unplugged.launcher.data.repository.DeviceStateRepository
 import com.unplugged.launcher.data.repository.NotificationRepository
 import com.unplugged.launcher.domain.app_pad.AppPadManager
+import com.unplugged.launcher.domain.app_pad.ScreenStateReceiver
 import com.unplugged.launcher.domain.app_picker.AppPickerManager
 import com.unplugged.launcher.domain.dialer.DialerManager
 import com.unplugged.launcher.util.currentDate
 import com.unplugged.launcher.util.currentTime
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 
 class GetHomeScreenUiStateUseCase(
     private val appPadManager: AppPadManager,
@@ -25,7 +32,15 @@ class GetHomeScreenUiStateUseCase(
         }
     }
 
-    operator fun invoke(): Flow<HomeScreenUiState> {
+    operator fun invoke(context: Context): Flow<HomeScreenUiState> = callbackFlow {
+        val screenStateReceiver = ScreenStateReceiver {
+            appPadManager.randomizeAppSlots()
+        }
+        context.registerReceiver(
+            screenStateReceiver,
+            IntentFilter(Intent.ACTION_SCREEN_ON)
+        )
+
         val flows = listOf(
             appPadManager.appSlots,
             appPickerManager.pickerState,
@@ -35,7 +50,7 @@ class GetHomeScreenUiStateUseCase(
             timeTickerFlow
         )
 
-        return combine(flows) { values ->
+        val combinedFlow = combine(flows) { values ->
             val appSlots = values[0] as List<*>
             val pickerState = values[1] as AppPickerManager.AppPickerState
             val enteredNumber = values[2] as String
@@ -53,6 +68,17 @@ class GetHomeScreenUiStateUseCase(
                 time = currentTime(),
                 date = currentDate()
             )
+        }
+
+        val job = launch {
+            combinedFlow.collect { uiState ->
+                trySend(uiState)
+            }
+        }
+
+        awaitClose {
+            context.unregisterReceiver(screenStateReceiver)
+            job.cancel()
         }
     }
 

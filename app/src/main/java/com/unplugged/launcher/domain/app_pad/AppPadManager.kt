@@ -64,4 +64,22 @@ class AppPadManager(
             }
         }
     }
+
+
+    fun randomizeAppSlots() {
+        _appSlots.update { currentSlots ->
+            val filledSlots = currentSlots.filterNotNull()
+            val newSlots = MutableList<LauncherApp?>(12) { null }
+            val availableIndices = (0..11).toMutableList()
+            availableIndices.shuffle()
+            filledSlots.forEach { app ->
+                if (availableIndices.isNotEmpty()) {
+                    val randomIndex = availableIndices.removeAt(0)
+                    newSlots[randomIndex] = app
+                }
+            }
+            newSlots
+        }
+    }
+
 }
