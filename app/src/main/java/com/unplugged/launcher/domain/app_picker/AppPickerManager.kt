@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.update
 class AppPickerManager {
 
     data class AppPickerState(
-        val isVisible: Boolean = false,
+        val show: Boolean = false,
         val searchQuery: String = "",
-        val filteredApps: List<LauncherApp> = emptyList()
+        val apps: List<LauncherApp> = emptyList()
     )
 
     private val _pickerState = MutableStateFlow(AppPickerState())
@@ -25,12 +25,11 @@ class AppPickerManager {
     fun openPicker() {
         _pickerState.update {
             it.copy(
-                isVisible = true,
-                filteredApps = allInstalledApps
+                show = true,
+                apps = allInstalledApps
             )
         }
     }
-
 
     fun closePicker() {
         _pickerState.value = AppPickerState()
@@ -47,7 +46,7 @@ class AppPickerManager {
         _pickerState.update {
             it.copy(
                 searchQuery = query,
-                filteredApps = filtered
+                apps = filtered
             )
         }
     }

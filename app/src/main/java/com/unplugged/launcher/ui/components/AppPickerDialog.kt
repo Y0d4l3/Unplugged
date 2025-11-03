@@ -13,11 +13,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.unplugged.launcher.data.model.LauncherApp
-import com.unplugged.launcher.domain.home_screen.HomeScreenUiState
+import com.unplugged.launcher.domain.app_pad.AppPadUiState
 
 @Composable
 fun AppPickerDialog(
-    uiState: HomeScreenUiState,
+    appPadUiState: AppPadUiState,
     onAppSelected: (LauncherApp) -> Unit,
     onDismiss: () -> Unit,
     onSearchQueryChanged: (String) -> Unit
@@ -28,7 +28,7 @@ fun AppPickerDialog(
         text = {
             Column(modifier = Modifier.heightIn(max = 400.dp)) {
                 OutlinedTextField(
-                    value = uiState.appPickerSearchQuery,
+                    value = appPadUiState.appPickerSearchQuery,
                     onValueChange = onSearchQueryChanged,
                     label = { Text("Suchen...") },
                     modifier = Modifier
@@ -39,7 +39,7 @@ fun AppPickerDialog(
 
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     items(
-                        uiState.filteredApps,
+                        appPadUiState.appPickerApps,
                         key = { it.componentName.flattenToString() }) { app ->
                         AppPickerItem(
                             app = app,

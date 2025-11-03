@@ -15,19 +15,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.unplugged.launcher.domain.app_pad.AppPadViewModel
 import com.unplugged.launcher.domain.dialer.DialerViewModel
 import com.unplugged.launcher.domain.home_screen.HomeScreenViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
-    viewModel: HomeScreenViewModel = viewModel()
+    homeViewModel: HomeScreenViewModel = viewModel(),
+    dialerViewModel: DialerViewModel = viewModel(),
+    appPadViewModel: AppPadViewModel = viewModel()
 ) {
-    val dialerViewModel: DialerViewModel = viewModel()
-
-    val uiState by viewModel.uiState.collectAsState()
+    val homeUiState by homeViewModel.uiState.collectAsState()
     val dialerUiState by dialerViewModel.uiState.collectAsState()
-    val isBatterySaverOn = uiState.isBatterySaverOn
+    val appPadUiState by appPadViewModel.uiState.collectAsState()
 
     val topPagerState = rememberPagerState(
         initialPage = Int.MAX_VALUE / 2,
@@ -52,39 +53,39 @@ fun HomeScreen(
                 .weight(1f)
                 .padding(top = 10.dp),
             topPagerState = topPagerState,
-            time = uiState.time,
-            date = uiState.date,
-            lastNotification = uiState.lastNotification,
-            onDismissNotification = viewModel::onDismissNotification,
+            time = homeUiState.time,
+            date = homeUiState.date,
+            lastNotification = homeUiState.lastNotification,
+            onDismissNotification = homeViewModel::onDismissNotification,
         )
 
         BottomPager(
             modifier = Modifier.weight(2f),
             bottomPagerState = bottomPagerState,
-            uiState = uiState,
+            appPadUiState = appPadUiState,
+            onAddAppClicked = appPadViewModel::onAddAppClicked,
+            onLaunchApp = appPadViewModel::onLaunchApp,
+            onRemoveApp = appPadViewModel::onRemoveApp,
 
             dialerUiState = dialerUiState,
             onNumberClicked = dialerViewModel::onNumberClicked,
             onDeleteClicked = dialerViewModel::onDeleteClicked,
             onCallClicked = dialerViewModel::onCallClicked,
 
-            onAddAppClicked = viewModel::onAddAppClicked,
-            onLaunchApp = viewModel::onLaunchApp,
-            onRemoveApp = viewModel::onRemoveApp,
-            isBatterySaverOn = isBatterySaverOn,
-            onOpenBatterySettings = viewModel::openBatterySettings,
-            openNotificationAccessSettings = viewModel::openNotificationAccessSettings,
-            areNotificationsEnabled = uiState.areNotificationsEnabled,
-            onToggleNotifications = viewModel::onToggleNotifications
+            isBatterySaverOn = homeUiState.isBatterySaverOn,
+            onOpenBatterySettings = homeViewModel::openBatterySettings,
+            openNotificationAccessSettings = homeViewModel::openNotificationAccessSettings,
+            areNotificationsEnabled = homeUiState.areNotificationsEnabled,
+            onToggleNotifications = homeViewModel::onToggleNotifications
         )
     }
 
-    if (uiState.showAppPicker) {
+    if (appPadUiState.showAppPicker) {
         AppPickerDialog(
-            uiState = uiState,
-            onDismiss = viewModel::onDismissAppPicker,
-            onAppSelected = viewModel::onAppSelected,
-            onSearchQueryChanged = viewModel::onAppPickerSearchQueryChanged
+            appPadUiState = appPadUiState,
+            onDismiss = appPadViewModel::onDismissAppPicker,
+            onAppSelected = appPadViewModel::onAppSelected,
+            onSearchQueryChanged = appPadViewModel::onAppPickerSearchQueryChanged
         )
     }
 }

@@ -6,27 +6,30 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.unplugged.launcher.data.model.LauncherApp
+import com.unplugged.launcher.domain.app_pad.AppPadUiState
 import com.unplugged.launcher.domain.dialer.DialerUiState
-import com.unplugged.launcher.domain.home_screen.HomeScreenUiState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BottomPager(
     modifier: Modifier = Modifier,
     bottomPagerState: PagerState,
-    uiState: HomeScreenUiState,
+
+    appPadUiState: AppPadUiState,
+    onAddAppClicked: (Int) -> Unit,
+    onLaunchApp: (LauncherApp) -> Unit,
+    onRemoveApp: (Int) -> Unit,
+
     dialerUiState: DialerUiState,
     onNumberClicked: (String) -> Unit,
     onDeleteClicked: () -> Unit,
     onCallClicked: () -> Unit,
-    onAddAppClicked: (Int) -> Unit,
-    onLaunchApp: (LauncherApp) -> Unit,
-    onRemoveApp: (Int) -> Unit,
+
     isBatterySaverOn: Boolean,
     onOpenBatterySettings: () -> Unit,
     openNotificationAccessSettings: () -> Unit,
     areNotificationsEnabled: Boolean,
-    onToggleNotifications: (Boolean) -> Unit,
+    onToggleNotifications: (Boolean) -> Unit
 ) {
     HorizontalPager(
         state = bottomPagerState,
@@ -34,7 +37,7 @@ fun BottomPager(
     ) { page ->
         when (page % 3) {
             0 -> AppGrid(
-                appSlots = uiState.appSlots,
+                appSlots = appPadUiState.appSlots,
                 onAddAppClicked = onAddAppClicked,
                 onLaunchApp = onLaunchApp,
                 onRemoveApp = onRemoveApp
