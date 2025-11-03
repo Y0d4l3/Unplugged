@@ -18,17 +18,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unplugged.launcher.domain.app_pad.AppPadViewModel
 import com.unplugged.launcher.domain.dialer.DialerViewModel
 import com.unplugged.launcher.domain.home_screen.HomeScreenViewModel
+import com.unplugged.launcher.domain.settings.SettingsViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     homeViewModel: HomeScreenViewModel = viewModel(),
     dialerViewModel: DialerViewModel = viewModel(),
-    appPadViewModel: AppPadViewModel = viewModel()
+    appPadViewModel: AppPadViewModel = viewModel(),
+    settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val homeUiState by homeViewModel.uiState.collectAsState()
     val dialerUiState by dialerViewModel.uiState.collectAsState()
     val appPadUiState by appPadViewModel.uiState.collectAsState()
+    val settingsUiState by settingsViewModel.uiState.collectAsState()
 
     val topPagerState = rememberPagerState(
         initialPage = Int.MAX_VALUE / 2,
@@ -72,11 +75,11 @@ fun HomeScreen(
             onDeleteClicked = dialerViewModel::onDeleteClicked,
             onCallClicked = dialerViewModel::onCallClicked,
 
-            isBatterySaverOn = homeUiState.isBatterySaverOn,
-            onOpenBatterySettings = homeViewModel::openBatterySettings,
-            openNotificationAccessSettings = homeViewModel::openNotificationAccessSettings,
-            areNotificationsEnabled = homeUiState.areNotificationsEnabled,
-            onToggleNotifications = homeViewModel::onToggleNotifications
+            settingsUiState = settingsUiState,
+            onOpenBatterySettings = settingsViewModel::onOpenBatterySettings,
+            onToggleNotifications = settingsViewModel::onToggleNotifications,
+
+            openNotificationAccessSettings = homeViewModel::openNotificationAccessSettings
         )
     }
 

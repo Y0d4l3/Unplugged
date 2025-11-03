@@ -18,13 +18,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.unplugged.launcher.domain.settings.SettingsUiState
 
 @Composable
 fun SettingsPage(
-    isBatterySaverOn: Boolean,
+    settingsUiState: SettingsUiState,
+
     onOpenBatterySettings: () -> Unit,
     openNotificationAccessSettings: () -> Unit,
-    areNotificationsEnabled: Boolean,
     onToggleNotifications: (Boolean) -> Unit
 ) {
     Column(
@@ -41,7 +42,7 @@ fun SettingsPage(
         ) {
             Text(text = "Push-Benachrichtigungen", color = Color.White, fontSize = 16.sp)
             Switch(
-                checked = areNotificationsEnabled,
+                checked = settingsUiState.areNotificationsEnabled,
                 onCheckedChange = onToggleNotifications
             )
         }
@@ -50,7 +51,7 @@ fun SettingsPage(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            if (!isBatterySaverOn) {
+            if (!settingsUiState.isBatterySaverOn) {
                 Text(
                     text = "Tipp: Für die beste Erfahrung den extremen Batteriesparmodus aktivieren.",
                     color = Color.White.copy(alpha = 0.7f),

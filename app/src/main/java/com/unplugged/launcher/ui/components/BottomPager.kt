@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import com.unplugged.launcher.data.model.LauncherApp
 import com.unplugged.launcher.domain.app_pad.AppPadUiState
 import com.unplugged.launcher.domain.dialer.DialerUiState
+import com.unplugged.launcher.domain.settings.SettingsUiState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -25,10 +26,9 @@ fun BottomPager(
     onDeleteClicked: () -> Unit,
     onCallClicked: () -> Unit,
 
-    isBatterySaverOn: Boolean,
+    settingsUiState: SettingsUiState,
     onOpenBatterySettings: () -> Unit,
     openNotificationAccessSettings: () -> Unit,
-    areNotificationsEnabled: Boolean,
     onToggleNotifications: (Boolean) -> Unit
 ) {
     HorizontalPager(
@@ -52,10 +52,9 @@ fun BottomPager(
 
             2 -> {
                 SettingsPage(
-                    isBatterySaverOn = isBatterySaverOn,
+                    settingsUiState = settingsUiState,
                     onOpenBatterySettings = onOpenBatterySettings,
                     openNotificationAccessSettings = openNotificationAccessSettings,
-                    areNotificationsEnabled = areNotificationsEnabled,
                     onToggleNotifications = onToggleNotifications
                 )
             }
