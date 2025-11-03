@@ -2,7 +2,7 @@ package com.unplugged.launcher.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.height
@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 fun GlassKey(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
@@ -24,7 +25,10 @@ fun GlassKey(
             .height(80.dp)
             .border(2.dp, Color.White.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
             .background(Color.Black, RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick),
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            ),
         contentAlignment = Alignment.Center
     ) {
         content()
