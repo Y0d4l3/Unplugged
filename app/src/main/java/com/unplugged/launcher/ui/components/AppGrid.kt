@@ -3,7 +3,6 @@ package com.unplugged.launcher.ui.components
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,16 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.res.ResourcesCompat
 import com.unplugged.launcher.data.model.LauncherApp
-import androidx.core.graphics.drawable.toBitmap
-import com.unplugged.launcher.R
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -40,7 +32,6 @@ fun AppGrid(
     onLaunchApp: (LauncherApp) -> Unit,
     onRemoveApp: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    iconColorFilter: ColorFilter? = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
 ) {
 
     Column(
@@ -70,12 +61,12 @@ fun AppGrid(
                         }
                     }
                 ) {
-                    if (app?.icon != null) {
-                        Image(
-                            bitmap = app.icon.asImageBitmap(),
+                    if (app != null) {
+                        AppIcon(
+                            componentName = app.componentName,
                             contentDescription = app.label,
                             modifier = Modifier.size(40.dp),
-                            colorFilter = iconColorFilter
+                            applyGrayscale = true
                         )
                     } else {
                         Icon(
@@ -96,14 +87,11 @@ fun AppGrid(
 @Preview(showBackground = true, backgroundColor = 0xFF1C1C1E)
 @Composable
 private fun AppGridPreview() {
-    val context = LocalContext.current
-    val drawable = ResourcesCompat.getDrawable(context.resources, R.drawable.ic_launcher_foreground, null)!!
-
     val fakeApps = listOf(
         LauncherApp(
             label = "Phone",
             componentName = ComponentName("com.android.phone", "com.android.phone.SomeActivity"),
-            icon = drawable.toBitmap(),
+            icon = null,
         ),
         null,
         null,

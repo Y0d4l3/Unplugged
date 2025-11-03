@@ -31,11 +31,8 @@ class AppPadManager(
         val savedApps = savedPackageNames.mapNotNull { packageName ->
             allApps.find { it.componentName.packageName == packageName }
         }
-        val savedAppsWithIcons = savedApps.map { app ->
-            app.copy(icon = appRepository.loadIconForApp(app.componentName))
-        }
         val newSlots = MutableList<LauncherApp?>(12) { null }
-        savedAppsWithIcons.forEachIndexed { index, appInfo ->
+        savedApps.forEachIndexed { index, appInfo ->
             if (index < newSlots.size) {
                 newSlots[index] = appInfo
             }
@@ -43,14 +40,12 @@ class AppPadManager(
         _appSlots.value = newSlots
     }
 
-    suspend fun addAppToSlot(app: LauncherApp, slotIndex: Int) {
+    fun addAppToSlot(app: LauncherApp, slotIndex: Int) {
         if (slotIndex !in 0..11) return
-
-        val appWithIcon = app.copy(icon = appRepository.loadIconForApp(app.componentName))
 
         _appSlots.update { currentSlots ->
             currentSlots.toMutableList().also {
-                it[slotIndex] = appWithIcon
+                it[slotIndex] = app
             }
         }
     }

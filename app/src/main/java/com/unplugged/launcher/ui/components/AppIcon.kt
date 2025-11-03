@@ -16,16 +16,21 @@ import androidx.compose.ui.unit.dp
 import com.unplugged.launcher.data.repository.AppRepository
 import android.content.ComponentName
 import android.graphics.Bitmap
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.unplugged.launcher.R
 
+private val grayscaleColorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
+
 @Composable
 fun AppIcon(
     componentName: ComponentName,
     contentDescription: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    applyGrayscale: Boolean = false
 ) {
     val appRepository = AppRepository(LocalContext.current)
 
@@ -37,7 +42,8 @@ fun AppIcon(
         if (iconBitmap != null) {
             Image(
                 bitmap = iconBitmap!!.asImageBitmap(),
-                contentDescription = contentDescription
+                contentDescription = contentDescription,
+                colorFilter = if (applyGrayscale) grayscaleColorFilter else null
             )
         } else {
             CircularProgressIndicator(modifier = Modifier.size(24.dp))
