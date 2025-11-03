@@ -1,12 +1,9 @@
 package com.unplugged.launcher.domain.app_pad
 
 import android.app.Application
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
+import com.unplugged.launcher.util.VibratorManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.unplugged.launcher.data.model.LauncherApp
@@ -29,10 +26,7 @@ class AppPadViewModel(app: Application) : AndroidViewModel(app) {
     private val settingsManager: SettingsManager by lazy { SettingsManager(app) }
     private val appPickerManager: AppPickerManager by lazy { AppPickerManager() }
     private val appPadManager: AppPadManager by lazy { AppPadManager(appRepository, settingsManager, viewModelScope) }
-
-    private val vibrator: Vibrator? by lazy {
-        (app.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager)?.defaultVibrator
-    }
+    private val vibratorManager: VibratorManager by lazy { VibratorManager(app) }
 
     private var selectedSlotIndex: Int? = null
 
@@ -89,6 +83,7 @@ class AppPadViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun onAddAppClicked(slotIndex: Int) {
+        vibratorManager.vibrate()
         selectedSlotIndex = slotIndex
         appPickerManager.openPicker()
     }
@@ -113,7 +108,6 @@ class AppPadViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun onLaunchApp(appToLaunch: LauncherApp) {
-        vibrator?.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE))
         viewModelScope.launch {
             delay(500L)
             appRepository.launchApp(appToLaunch.componentName)

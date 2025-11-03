@@ -2,8 +2,6 @@ package com.unplugged.launcher.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +19,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -76,28 +73,16 @@ fun Dialer(
         ) {
             items(9) { index ->
                 val number = (index + 1).toString()
-                val interactionSource = remember { MutableInteractionSource() }
                 GlassKey(
-                    interactionSource = interactionSource,
-                    modifier = Modifier.clickable(
-                        interactionSource = interactionSource,
-                        indication = null,
-                        onClick = { onNumberClicked(number) }
-                    )
+                    onClick = { onNumberClicked(number) }
                 ) {
                     Text(text = number, fontSize = 28.sp, color = Color.White)
                 }
             }
 
             item {
-                val interactionSource = remember { MutableInteractionSource() }
                 GlassKey(
-                    interactionSource = interactionSource,
-                    modifier = Modifier.clickable(
-                        interactionSource = interactionSource,
-                        indication = null,
-                        onClick = onDeleteClicked
-                    )
+                    onClick = onDeleteClicked
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
@@ -108,28 +93,16 @@ fun Dialer(
             }
 
             item {
-                val interactionSource = remember { MutableInteractionSource() }
                 GlassKey(
-                    interactionSource = interactionSource,
-                    modifier = Modifier.clickable(
-                        interactionSource = interactionSource,
-                        indication = null,
-                        onClick = { onNumberClicked("0") }
-                    )
+                    onClick = { onNumberClicked("0") }
                 ) {
                     Text(text = "0", fontSize = 28.sp, color = Color.White)
                 }
             }
 
             item {
-                val interactionSource = remember { MutableInteractionSource() }
                 GlassKey(
-                    interactionSource = interactionSource,
-                    modifier = Modifier.clickable(
-                        interactionSource = interactionSource,
-                        indication = null,
-                        onClick = onCallClicked
-                    )
+                    onClick = onCallClicked
                 ) {
                     Icon(
                         imageVector = Icons.Default.Call,

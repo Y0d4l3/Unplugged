@@ -31,10 +31,12 @@ class DialerViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun onDeleteClicked() {
+        vibratorManager.vibrate()
         dialerManager.deleteLastDigit()
     }
 
     fun onCallClicked() {
+        vibratorManager.vibrate()
         dialerManager.dialCurrentNumber()
     }
 }
