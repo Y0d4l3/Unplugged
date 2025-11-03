@@ -2,6 +2,8 @@ package com.unplugged.launcher.domain.app_pad
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -34,6 +36,12 @@ class AppPadViewModel(app: Application) : AndroidViewModel(app) {
 
     private var selectedSlotIndex: Int? = null
 
+    private val screenStateReceiver = ScreenStateReceiver(
+        onScreenOn = {
+            appPadManager.randomizeAppSlots()
+        }
+    )
+
     val uiState: StateFlow<AppPadUiState> = combine(
         appPadManager.appSlots,
         appPickerManager.pickerState,
@@ -53,6 +61,14 @@ class AppPadViewModel(app: Application) : AndroidViewModel(app) {
     init {
         loadInitialData()
         observeAndPersistFavoriteApps()
+
+        val intentFilter = IntentFilter(Intent.ACTION_SCREEN_ON)
+        app.registerReceiver(screenStateReceiver, intentFilter)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        getApplication<Application>().unregisterReceiver(screenStateReceiver)
     }
 
     private fun loadInitialData() {
