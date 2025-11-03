@@ -146,12 +146,20 @@ fun TopPager(
 private fun TopPagerPreview_Clock() {
     val pagerState = rememberPagerState { 2 }
 
+    val fakeNotification = AppNotification(
+        key = "preview_notification_key",
+        appName = "Messages",
+        appIcon = android.graphics.Color.BLUE.toDrawable(),
+        title = "Jane Doe",
+        text = "Hey, are you free for lunch?"
+    )
+
     TopPager(
         topPagerState = pagerState,
         time = "10:09",
         date = "Fri, 3 Nov",
         onDismissNotification = {},
-        lastNotification = null
+        lastNotification = fakeNotification
     )
 }
 
