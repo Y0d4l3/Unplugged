@@ -6,6 +6,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.unplugged.launcher.data.model.LauncherApp
+import com.unplugged.launcher.domain.dialer.DialerUiState
 import com.unplugged.launcher.domain.home_screen.HomeScreenUiState
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -14,6 +15,7 @@ fun BottomPager(
     modifier: Modifier = Modifier,
     bottomPagerState: PagerState,
     uiState: HomeScreenUiState,
+    dialerUiState: DialerUiState,
     onNumberClicked: (String) -> Unit,
     onDeleteClicked: () -> Unit,
     onCallClicked: () -> Unit,
@@ -24,7 +26,7 @@ fun BottomPager(
     onOpenBatterySettings: () -> Unit,
     openNotificationAccessSettings: () -> Unit,
     areNotificationsEnabled: Boolean,
-    onToggleNotifications: (Boolean) -> Unit
+    onToggleNotifications: (Boolean) -> Unit,
 ) {
     HorizontalPager(
         state = bottomPagerState,
@@ -39,7 +41,7 @@ fun BottomPager(
             )
 
             1 -> Dialer(
-                enteredNumber = uiState.enteredNumber,
+                dialerUiState = dialerUiState,
                 onNumberClicked = onNumberClicked,
                 onDeleteClicked = onDeleteClicked,
                 onCallClicked = onCallClicked

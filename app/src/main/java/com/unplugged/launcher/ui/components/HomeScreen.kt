@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -16,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.unplugged.launcher.domain.dialer.DialerViewModel
 import com.unplugged.launcher.domain.home_screen.HomeScreenViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -23,12 +23,14 @@ import com.unplugged.launcher.domain.home_screen.HomeScreenViewModel
 fun HomeScreen(
     viewModel: HomeScreenViewModel = viewModel()
 ) {
+    val dialerViewModel: DialerViewModel = viewModel()
+
     val uiState by viewModel.uiState.collectAsState()
+    val dialerUiState by dialerViewModel.uiState.collectAsState()
     val isBatterySaverOn = uiState.isBatterySaverOn
 
-
     val topPagerState = rememberPagerState(
-        initialPage = Int.MAX_VALUE / 3,
+        initialPage = Int.MAX_VALUE / 2,
         pageCount = { Int.MAX_VALUE }
     )
 
@@ -60,9 +62,12 @@ fun HomeScreen(
             modifier = Modifier.weight(2f),
             bottomPagerState = bottomPagerState,
             uiState = uiState,
-            onNumberClicked = viewModel::onNumberClicked,
-            onDeleteClicked = viewModel::onDeleteClicked,
-            onCallClicked = viewModel::onCallClicked,
+
+            dialerUiState = dialerUiState,
+            onNumberClicked = dialerViewModel::onNumberClicked,
+            onDeleteClicked = dialerViewModel::onDeleteClicked,
+            onCallClicked = dialerViewModel::onCallClicked,
+
             onAddAppClicked = viewModel::onAddAppClicked,
             onLaunchApp = viewModel::onLaunchApp,
             onRemoveApp = viewModel::onRemoveApp,

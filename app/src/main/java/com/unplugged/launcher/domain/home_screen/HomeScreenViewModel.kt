@@ -7,14 +7,13 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.unplugged.launcher.data.source.local.SettingsManager
 import com.unplugged.launcher.data.model.LauncherApp
 import com.unplugged.launcher.data.repository.AppRepository
 import com.unplugged.launcher.data.repository.DeviceStateRepository
 import com.unplugged.launcher.data.repository.NotificationRepository
+import com.unplugged.launcher.data.source.local.SettingsManager
 import com.unplugged.launcher.domain.app_pad.AppPadManager
 import com.unplugged.launcher.domain.app_picker.AppPickerManager
-import com.unplugged.launcher.domain.dialer.DialerManager
 import com.unplugged.launcher.domain.notifications.NotificationHandler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,19 +25,22 @@ import kotlinx.coroutines.launch
 
 class HomeScreenViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val appRepository = AppRepository(app)
-    private val deviceStateRepository = DeviceStateRepository(app)
-    private val settingsManager = SettingsManager(app)
-    private val notificationHandler = NotificationHandler(app)
-    private val dialerManager = DialerManager(app)
-    private val appPickerManager = AppPickerManager()
-    private val appPadManager = AppPadManager(appRepository, settingsManager, viewModelScope)
-    private val vibrator: Vibrator? =
-        (app.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager)?.defaultVibrator
+    private val appRepository: AppRepository by lazy { AppRepository(app) }
+    private val deviceStateRepository: DeviceStateRepository by lazy { DeviceStateRepository(app) }
+    private val settingsManager: SettingsManager by lazy { SettingsManager(app) }
+    private val notificationHandler: NotificationHandler by lazy { NotificationHandler(app) }
+    private val appPickerManager: AppPickerManager by lazy { AppPickerManager() }
+    private val appPadManager: AppPadManager by lazy { AppPadManager(appRepository, settingsManager, viewModelScope) }
 
-    private val getHomeScreenUiStateUseCase = GetHomeScreenUiStateUseCase(
-        appPadManager, appPickerManager, dialerManager, deviceStateRepository, settingsManager
-    )
+    private val vibrator: Vibrator? by lazy {
+        (app.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager)?.defaultVibrator
+    }
+
+    private val getHomeScreenUiStateUseCase: GetHomeScreenUiStateUseCase by lazy {
+        GetHomeScreenUiStateUseCase(
+            appPadManager, appPickerManager, deviceStateRepository, settingsManager
+        )
+    }
 
     val uiState: StateFlow<HomeScreenUiState> = getHomeScreenUiStateUseCase(getApplication())
         .stateIn(
@@ -92,18 +94,6 @@ class HomeScreenViewModel(app: Application) : AndroidViewModel(app) {
             NotificationRepository.dismissNotification(notificationToDismiss.key)
             NotificationRepository.updateNotification(null)
         }
-    }
-
-    fun onNumberClicked(digit: String) {
-        dialerManager.addDigit(digit)
-    }
-
-    fun onDeleteClicked() {
-        dialerManager.deleteLastDigit()
-    }
-
-    fun onCallClicked() {
-        dialerManager.dialCurrentNumber()
     }
 
     fun onAddAppClicked(slotIndex: Int) {

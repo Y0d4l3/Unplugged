@@ -9,7 +9,6 @@ import com.unplugged.launcher.data.source.local.SettingsManager
 import com.unplugged.launcher.domain.app_pad.AppPadManager
 import com.unplugged.launcher.domain.app_pad.ScreenStateReceiver
 import com.unplugged.launcher.domain.app_picker.AppPickerManager
-import com.unplugged.launcher.domain.dialer.DialerManager
 import com.unplugged.launcher.util.currentDate
 import com.unplugged.launcher.util.currentTime
 import kotlinx.coroutines.channels.awaitClose
@@ -23,7 +22,6 @@ import kotlinx.coroutines.launch
 class GetHomeScreenUiStateUseCase(
     private val appPadManager: AppPadManager,
     private val appPickerManager: AppPickerManager,
-    private val dialerManager: DialerManager,
     private val deviceStateRepository: DeviceStateRepository,
     private val settingsManager: SettingsManager
 ) {
@@ -46,7 +44,6 @@ class GetHomeScreenUiStateUseCase(
         val flows = listOf(
             appPadManager.appSlots,
             appPickerManager.pickerState,
-            dialerManager.enteredNumber,
             deviceStateRepository.isBatterySaverOn,
             NotificationRepository.lastNotification,
             settingsManager.showPushNotificationsFlow,

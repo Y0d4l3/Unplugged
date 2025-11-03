@@ -28,13 +28,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.unplugged.launcher.domain.dialer.DialerUiState
 
 @Composable
 fun Dialer(
-    enteredNumber: String,
+    dialerUiState: DialerUiState,
     onNumberClicked: (String) -> Unit,
     onDeleteClicked: () -> Unit,
-    onCallClicked: () -> Unit
+    onCallClicked: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -57,7 +58,7 @@ fun Dialer(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = enteredNumber,
+                text = dialerUiState.enteredNumber,
                 fontSize = 32.sp,
                 color = Color.White,
                 maxLines = 1,
