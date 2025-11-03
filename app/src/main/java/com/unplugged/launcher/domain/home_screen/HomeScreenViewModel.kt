@@ -3,6 +3,7 @@ package com.unplugged.launcher.domain.home_screen
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.unplugged.launcher.data.model.AppNotification
 import com.unplugged.launcher.data.repository.NotificationRepository
 import com.unplugged.launcher.domain.notifications.NotificationHandler
 import com.unplugged.launcher.util.TimeTicker
@@ -10,6 +11,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+
+data class HomeScreenUiState(
+    val time: String = "",
+    val date: String = "",
+    val lastNotification: AppNotification? = null
+)
 
 class HomeScreenViewModel(app: Application) : AndroidViewModel(app) {
 
