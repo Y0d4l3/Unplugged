@@ -3,8 +3,10 @@ package com.unplugged.launcher.ui.components
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.unplugged.launcher.data.model.LauncherApp
 import com.unplugged.launcher.domain.app_pad.AppPadUiState
 import com.unplugged.launcher.domain.dialer.DialerUiState
@@ -60,4 +62,30 @@ fun BottomPager(
             }
         }
     }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Preview(name = "Bottom Pager Preview", showBackground = true, backgroundColor = 0xFF1C1C1E)
+@Composable
+private fun BottomPagerPreview() {
+    val pagerState = rememberPagerState(initialPage = 1) { 3 }
+
+    BottomPager(
+        bottomPagerState = pagerState,
+
+        appPadUiState = AppPadUiState(),
+        onAddAppClicked = {},
+        onLaunchApp = {},
+        onRemoveApp = {},
+
+        dialerUiState = DialerUiState(),
+        onNumberClicked = {},
+        onDeleteClicked = {},
+        onCallClicked = {},
+
+        settingsUiState = SettingsUiState(),
+        onOpenBatterySettings = {},
+        openNotificationAccessSettings = {},
+        onToggleNotifications = {}
+    )
 }

@@ -1,5 +1,6 @@
 package com.unplugged.launcher.ui.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -15,6 +16,10 @@ import androidx.compose.ui.unit.dp
 import com.unplugged.launcher.data.repository.AppRepository
 import android.content.ComponentName
 import android.graphics.Bitmap
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
+import com.unplugged.launcher.R
 
 @Composable
 fun AppIcon(
@@ -38,4 +43,46 @@ fun AppIcon(
             CircularProgressIndicator(modifier = Modifier.size(24.dp))
         }
     }
+}
+
+@Composable
+internal fun AppIcon(
+    iconBitmap: Bitmap?,
+    contentDescription: String?,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        if (iconBitmap != null) {
+            Image(
+                bitmap = iconBitmap.asImageBitmap(),
+                contentDescription = contentDescription
+            )
+        } else {
+            CircularProgressIndicator(modifier = Modifier.size(24.dp))
+        }
+    }
+}
+
+@SuppressLint("LocalContextResourcesRead")
+@Preview(name = "App Icon - Loaded", showBackground = true, backgroundColor = 0xFF1C1C1E)
+@Composable
+private fun AppIconPreview_Loaded() {
+    val context = LocalContext.current
+    val drawable = ResourcesCompat.getDrawable(context.resources, R.drawable.ic_launcher_foreground, null)!!
+
+    AppIcon(
+        iconBitmap = drawable.toBitmap(),
+        contentDescription = "Sample App",
+        modifier = Modifier.size(64.dp)
+    )
+}
+
+@Preview(name = "App Icon - Loading", showBackground = true, backgroundColor = 0xFF1C1C1E)
+@Composable
+private fun AppIconPreview_Loading() {
+    AppIcon(
+        iconBitmap = null,
+        contentDescription = "Loading...",
+        modifier = Modifier.size(64.dp)
+    )
 }

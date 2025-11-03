@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.unplugged.launcher.domain.dialer.DialerUiState
@@ -114,4 +115,17 @@ fun Dialer(
         }
         Spacer(modifier = Modifier.height(20.dp))
     }
+}
+
+@Preview(name = "Dialer", showBackground = true, backgroundColor = 0xFF1C1C1E)
+@Composable
+private fun DialerPreview_WithNumber() {
+    val uiStateWithNumber = DialerUiState(enteredNumber = "12345")
+
+    Dialer(
+        dialerUiState = uiStateWithNumber,
+        onNumberClicked = {},
+        onDeleteClicked = {},
+        onCallClicked = {}
+    )
 }

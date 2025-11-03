@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MailOutline
@@ -18,10 +19,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.unplugged.launcher.data.model.AppNotification
+import androidx.core.graphics.drawable.toDrawable
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -135,4 +138,42 @@ fun TopPager(
             }
         }
     }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Preview(name = "Top Pager - Clock", showBackground = true, backgroundColor = 0xFF1C1C1E)
+@Composable
+private fun TopPagerPreview_Clock() {
+    val pagerState = rememberPagerState { 2 }
+
+    TopPager(
+        topPagerState = pagerState,
+        time = "10:09",
+        date = "Fri, 3 Nov",
+        onDismissNotification = {},
+        lastNotification = null
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Preview(name = "Top Pager - Notification", showBackground = true, backgroundColor = 0xFF1C1C1E)
+@Composable
+private fun TopPagerPreview_Notification() {
+    val pagerState = rememberPagerState(initialPage = 1) { 2 }
+
+    val fakeNotification = AppNotification(
+        key = "preview_notification_key",
+        appName = "Messages",
+        appIcon = android.graphics.Color.BLUE.toDrawable(),
+        title = "Jane Doe",
+        text = "Hey, are you free for lunch?"
+    )
+
+    TopPager(
+        topPagerState = pagerState,
+        time = "10:10",
+        date = "Fri, 3 Nov",
+        onDismissNotification = {},
+        lastNotification = fakeNotification
+    )
 }

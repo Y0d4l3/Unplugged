@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.unplugged.launcher.domain.settings.SettingsUiState
@@ -97,4 +98,36 @@ fun SettingsPage(
             }
         }
     }
+}
+
+@Preview(name = "Settings - Battery Saver OFF", showBackground = true, backgroundColor = 0xFF1C1C1E)
+@Composable
+private fun SettingsPagePreview_BatteryOff() {
+    val uiState = SettingsUiState(
+        isBatterySaverOn = false,
+        areNotificationsEnabled = true
+    )
+
+    SettingsPage(
+        settingsUiState = uiState,
+        onOpenBatterySettings = {},
+        openNotificationAccessSettings = {},
+        onToggleNotifications = {}
+    )
+}
+
+@Preview(name = "Settings - Battery Saver ON", showBackground = true, backgroundColor = 0xFF1C1C1E)
+@Composable
+private fun SettingsPagePreview_BatteryOn() {
+    val uiState = SettingsUiState(
+        isBatterySaverOn = true,
+        areNotificationsEnabled = false
+    )
+
+    SettingsPage(
+        settingsUiState = uiState,
+        onOpenBatterySettings = {},
+        openNotificationAccessSettings = {},
+        onToggleNotifications = {}
+    )
 }
