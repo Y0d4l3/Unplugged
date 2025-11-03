@@ -1,33 +1,32 @@
-package com.unplugged.launcher.domain.home_screen
+package com.unplugged.launcher.domain.notifications
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.unplugged.launcher.data.model.AppNotification
 import com.unplugged.launcher.data.repository.NotificationRepository
-import com.unplugged.launcher.domain.notifications.NotificationHandler
 import com.unplugged.launcher.util.TimeTicker
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
-data class HomeScreenUiState(
+data class GlobalUiState(
     val time: String = "",
     val date: String = "",
     val lastNotification: AppNotification? = null
 )
 
-class HomeScreenViewModel(app: Application) : AndroidViewModel(app) {
+class NotificationViewModel(app: Application) : AndroidViewModel(app) {
 
     private val notificationHandler: NotificationHandler by lazy { NotificationHandler(app) }
 
-    val uiState: StateFlow<HomeScreenUiState> = combine(
+    val uiState: StateFlow<GlobalUiState> = combine(
         TimeTicker.time,
         TimeTicker.date,
         NotificationRepository.lastNotification
     ) { time, date, notification ->
-        HomeScreenUiState(
+        GlobalUiState(
             time = time,
             date = date,
             lastNotification = notification
@@ -35,7 +34,7 @@ class HomeScreenViewModel(app: Application) : AndroidViewModel(app) {
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
-        initialValue = HomeScreenUiState()
+        initialValue = GlobalUiState()
     )
 
     init {
