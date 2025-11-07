@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unplugged.launcher.domain.app_pad.AppPadUiState
 import com.unplugged.launcher.domain.app_pad.AppPadViewModel
@@ -27,12 +30,22 @@ fun HomeScreen(
     notificationViewModel: NotificationViewModel = viewModel(),
     dialerViewModel: DialerViewModel = viewModel(),
     appPadViewModel: AppPadViewModel = viewModel(),
-    settingsViewModel: SettingsViewModel = viewModel()
+    settingsViewModel: SettingsViewModel = viewModel(),
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 ) {
     val globalUiState by notificationViewModel.uiState.collectAsState()
     val dialerUiState by dialerViewModel.uiState.collectAsState()
     val appPadUiState by appPadViewModel.uiState.collectAsState()
     val settingsUiState by settingsViewModel.uiState.collectAsState()
+
+    DisposableEffect(lifecycleOwner, settingsViewModel) {
+        val observer = settingsViewModel
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     val topPagerState = rememberPagerState(initialPage = 0) { 3 }
     val bottomPagerState = rememberPagerState(initialPage = 0) { 3 }
@@ -53,7 +66,7 @@ fun HomeScreen(
         onCallClicked = dialerViewModel::onCallClicked,
         onOpenBatterySettings = settingsViewModel::onOpenBatterySettings,
         onToggleNotifications = settingsViewModel::onToggleNotifications,
-        openNotificationAccessSettings = notificationViewModel::openNotificationAccessSettings,
+        openNotificationAccessSettings = settingsViewModel::openNotificationAccessSettings,
         onDismissAppPicker = appPadViewModel::onDismissAppPicker,
         onAppSelected = appPadViewModel::onAppSelected,
         onSearchQueryChanged = appPadViewModel::onAppPickerSearchQueryChanged

@@ -17,8 +17,6 @@ data class GlobalUiState(
 
 class NotificationViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val notificationHandler: NotificationHandler by lazy { NotificationHandler(app) }
-
     val uiState: StateFlow<GlobalUiState> = combine(
         TimeTicker.time, TimeTicker.date, NotificationRepository.lastNotification
     ) { time, date, notification ->
@@ -30,19 +28,6 @@ class NotificationViewModel(app: Application) : AndroidViewModel(app) {
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = GlobalUiState()
     )
-
-    init {
-        notificationHandler.toggleNotificationService(enable = true)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        notificationHandler.toggleNotificationService(enable = false)
-    }
-
-    fun openNotificationAccessSettings() {
-        notificationHandler.openNotificationAccessSettings()
-    }
 
     fun onDismissNotification() {
         val notificationToDismiss = uiState.value.lastNotification

@@ -24,7 +24,6 @@ import com.unplugged.launcher.domain.settings.SettingsUiState
 @Composable
 fun SettingsPage(
     settingsUiState: SettingsUiState,
-
     onOpenBatterySettings: () -> Unit,
     openNotificationAccessSettings: () -> Unit,
     onToggleNotifications: (Boolean) -> Unit
@@ -89,6 +88,7 @@ fun SettingsPage(
             )
             Button(
                 onClick = openNotificationAccessSettings,
+                enabled = !settingsUiState.hasNotificationPermission,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -104,7 +104,7 @@ fun SettingsPage(
 @Composable
 private fun SettingsPagePreview_BatteryOff() {
     val uiState = SettingsUiState(
-        isBatterySaverOn = false, areNotificationsEnabled = true
+        isBatterySaverOn = false, areNotificationsEnabled = true, hasNotificationPermission = false
     )
 
     SettingsPage(
@@ -118,7 +118,7 @@ private fun SettingsPagePreview_BatteryOff() {
 @Composable
 private fun SettingsPagePreview_BatteryOn() {
     val uiState = SettingsUiState(
-        isBatterySaverOn = true, areNotificationsEnabled = false
+        isBatterySaverOn = true, areNotificationsEnabled = false, hasNotificationPermission = true
     )
 
     SettingsPage(
