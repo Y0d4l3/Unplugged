@@ -44,25 +44,29 @@ class NotificationStateService : NotificationListenerService() {
         processNotification(sbn)
 
         scope.launch {
-            val arePushNotificationsEnabled = settingsManager.showPushNotificationsFlow.first()
-            if (!arePushNotificationsEnabled) {
-                cancelNotification(sbn.key)
+            val processedSuccessfully = processNotification(sbn)
+
+            if (processedSuccessfully) {
+                val arePushNotificationsEnabled = settingsManager.showPushNotificationsFlow.first()
+                if (!arePushNotificationsEnabled) {
+                    cancelNotification(sbn.key)
+                }
             }
         }
     }
 
-    private fun processNotification(sbn: StatusBarNotification) {
+    private fun processNotification(sbn: StatusBarNotification): Boolean {
         if (!sbn.isClearable) {
-            return
+            return false
         }
 
         val extras = sbn.notification.extras
         val title = extras.getString(Notification.EXTRA_TITLE) ?: ""
         val text = extras.getCharSequence(Notification.EXTRA_TEXT)?.toString() ?: ""
-        if (title.isBlank() && text.isBlank()) return
+        if (title.isBlank() && text.isBlank()) return false
 
         val pm = applicationContext.packageManager
-        try {
+        return try {
             val appInfo = pm.getApplicationInfo(sbn.packageName, 0)
             val appName = pm.getApplicationLabel(appInfo).toString()
             val appIcon = pm.getApplicationIcon(sbn.packageName)
@@ -72,9 +76,10 @@ class NotificationStateService : NotificationListenerService() {
             )
 
             NotificationRepository.updateNotification(appNotification)
-
+            true
         } catch (_: Exception) {
             NotificationRepository.updateNotification(null)
+            false
         }
     }
 
