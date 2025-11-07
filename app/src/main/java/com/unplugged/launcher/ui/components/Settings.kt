@@ -94,7 +94,7 @@ fun SettingsPage(
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.2f))
             ) {
-                Text("Zugriff erteilen", color = Color.White)
+                Text(if (settingsUiState.hasNotificationPermission) "Zugriff erteilt" else "Zugriff erteilen", color = Color.White)
             }
         }
     }
