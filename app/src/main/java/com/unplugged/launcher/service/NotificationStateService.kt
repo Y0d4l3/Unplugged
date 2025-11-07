@@ -68,11 +68,7 @@ class NotificationStateService : NotificationListenerService() {
             val appIcon = pm.getApplicationIcon(sbn.packageName)
 
             val appNotification = AppNotification(
-                key = sbn.key,
-                appName = appName,
-                appIcon = appIcon,
-                title = title,
-                text = text
+                key = sbn.key, appName = appName, appIcon = appIcon, title = title, text = text
             )
 
             NotificationRepository.updateNotification(appNotification)
@@ -83,9 +79,7 @@ class NotificationStateService : NotificationListenerService() {
     }
 
     override fun onNotificationRemoved(
-        sbn: StatusBarNotification?,
-        rankingMap: RankingMap?,
-        reason: Int
+        sbn: StatusBarNotification?, rankingMap: RankingMap?, reason: Int
     ) {
         super.onNotificationRemoved(sbn, rankingMap, reason)
         sbn ?: return

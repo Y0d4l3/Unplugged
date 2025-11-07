@@ -149,6 +149,5 @@ private fun HomeScreenPreview() {
         openNotificationAccessSettings = {},
         onDismissAppPicker = {},
         onAppSelected = {},
-        onSearchQueryChanged = {}
-    )
+        onSearchQueryChanged = {})
 }

@@ -25,8 +25,7 @@ class AppPickerManager {
     fun openPicker() {
         _pickerState.update {
             it.copy(
-                show = true,
-                apps = allInstalledApps
+                show = true, apps = allInstalledApps
             )
         }
     }
@@ -45,8 +44,7 @@ class AppPickerManager {
         }
         _pickerState.update {
             it.copy(
-                searchQuery = query,
-                apps = filtered
+                searchQuery = query, apps = filtered
             )
         }
     }

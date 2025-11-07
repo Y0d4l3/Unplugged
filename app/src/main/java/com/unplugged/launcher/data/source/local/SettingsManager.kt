@@ -19,13 +19,11 @@ class SettingsManager(private val context: Context) {
         val SHOW_PUSH_NOTIFICATIONS = booleanPreferencesKey("show_push_notifications")
     }
 
-    val favoriteAppsFlow: Flow<Set<String>> = context.dataStore.data
-        .map { preferences ->
+    val favoriteAppsFlow: Flow<Set<String>> = context.dataStore.data.map { preferences ->
             preferences[PreferencesKeys.FAVORITE_APPS] ?: emptySet()
         }
 
-    val showPushNotificationsFlow: Flow<Boolean> = context.dataStore.data
-        .map { preferences ->
+    val showPushNotificationsFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
             preferences[PreferencesKeys.SHOW_PUSH_NOTIFICATIONS] ?: true
         }
 

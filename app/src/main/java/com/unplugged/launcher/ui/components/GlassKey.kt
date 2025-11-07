@@ -31,10 +31,8 @@ fun GlassKey(
             .border(2.dp, Color.White.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
             .background(Color.Black, RoundedCornerShape(12.dp))
             .combinedClickable(
-                onClick = onClick,
-                onLongClick = onLongClick
-            ),
-        contentAlignment = Alignment.Center
+                onClick = onClick, onLongClick = onLongClick
+            ), contentAlignment = Alignment.Center
     ) {
         content()
     }
@@ -45,11 +43,7 @@ fun GlassKey(
 @Preview(name = "Glass Key", showBackground = true, backgroundColor = 0xFF1C1C1E)
 @Composable
 private fun GlassKeyPreview() {
-    GlassKey(
-        modifier = Modifier.size(80.dp),
-        onClick = {},
-        onLongClick = {}
-    ) {
+    GlassKey(modifier = Modifier.size(80.dp), onClick = {}, onLongClick = {}) {
         Text(
             text = "1",
             color = Color.White,

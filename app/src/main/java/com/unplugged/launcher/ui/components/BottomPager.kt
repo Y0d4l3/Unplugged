@@ -34,8 +34,7 @@ fun BottomPager(
     onToggleNotifications: (Boolean) -> Unit
 ) {
     HorizontalPager(
-        state = bottomPagerState,
-        modifier = modifier
+        state = bottomPagerState, modifier = modifier
     ) { page ->
         when (page % 3) {
             0 -> AppGrid(
@@ -86,6 +85,5 @@ private fun BottomPagerPreview() {
         settingsUiState = SettingsUiState(),
         onOpenBatterySettings = {},
         openNotificationAccessSettings = {},
-        onToggleNotifications = {}
-    )
+        onToggleNotifications = {})
 }

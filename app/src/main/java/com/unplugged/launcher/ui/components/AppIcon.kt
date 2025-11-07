@@ -1,6 +1,8 @@
 package com.unplugged.launcher.ui.components
 
 import android.annotation.SuppressLint
+import android.content.ComponentName
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -10,20 +12,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import com.unplugged.launcher.data.repository.AppRepository
-import android.content.ComponentName
-import android.graphics.Bitmap
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.unplugged.launcher.R
+import com.unplugged.launcher.data.repository.AppRepository
 
-private val grayscaleColorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
+private val grayscaleColorFilter =
+    ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
 
 @Composable
 fun AppIcon(
@@ -53,15 +54,12 @@ fun AppIcon(
 
 @Composable
 internal fun AppIcon(
-    iconBitmap: Bitmap?,
-    contentDescription: String?,
-    modifier: Modifier = Modifier
+    iconBitmap: Bitmap?, contentDescription: String?, modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         if (iconBitmap != null) {
             Image(
-                bitmap = iconBitmap.asImageBitmap(),
-                contentDescription = contentDescription
+                bitmap = iconBitmap.asImageBitmap(), contentDescription = contentDescription
             )
         } else {
             CircularProgressIndicator(modifier = Modifier.size(24.dp))
@@ -74,7 +72,8 @@ internal fun AppIcon(
 @Composable
 private fun AppIconPreview_Loaded() {
     val context = LocalContext.current
-    val drawable = ResourcesCompat.getDrawable(context.resources, R.drawable.ic_launcher_foreground, null)!!
+    val drawable =
+        ResourcesCompat.getDrawable(context.resources, R.drawable.ic_launcher_foreground, null)!!
 
     AppIcon(
         iconBitmap = drawable.toBitmap(),
@@ -87,8 +86,6 @@ private fun AppIconPreview_Loaded() {
 @Composable
 private fun AppIconPreview_Loading() {
     AppIcon(
-        iconBitmap = null,
-        contentDescription = "Loading...",
-        modifier = Modifier.size(64.dp)
+        iconBitmap = null, contentDescription = "Loading...", modifier = Modifier.size(64.dp)
     )
 }

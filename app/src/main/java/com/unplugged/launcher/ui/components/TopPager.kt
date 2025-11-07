@@ -3,7 +3,14 @@ package com.unplugged.launcher.ui.components
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -22,9 +29,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.drawable.toDrawable
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.unplugged.launcher.data.model.AppNotification
-import androidx.core.graphics.drawable.toDrawable
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -39,12 +46,10 @@ fun TopPager(
     val grayscaleColorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
 
     HorizontalPager(
-        state = topPagerState,
-        modifier = modifier
+        state = topPagerState, modifier = modifier
     ) { page ->
         Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
         ) {
             when (page % 3) {
                 0 -> Box(modifier = Modifier.fillMaxSize()) {
@@ -72,8 +77,7 @@ fun TopPager(
 
                 1 -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                     ) {
                         if (lastNotification != null) {
                             Column(
@@ -121,8 +125,7 @@ fun TopPager(
                                     .align(Alignment.TopEnd)
                                     .padding(top = 16.dp, end = 24.dp)
                                     .size(24.dp)
-                                    .clickable { onDismissNotification() }
-                            )
+                                    .clickable { onDismissNotification() })
 
                         } else {
                             Icon(
@@ -134,6 +137,7 @@ fun TopPager(
                         }
                     }
                 }
+
                 2 -> {}
             }
         }

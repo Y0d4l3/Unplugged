@@ -15,11 +15,9 @@ class DialerViewModel(app: Application) : AndroidViewModel(app) {
     private val vibratorManager: VibratorManager by lazy { VibratorManager(app) }
 
 
-    val uiState: StateFlow<DialerUiState> = dialerManager.enteredNumber
-        .map { number ->
+    val uiState: StateFlow<DialerUiState> = dialerManager.enteredNumber.map { number ->
             DialerUiState(enteredNumber = number)
-        }
-        .stateIn(
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = DialerUiState()

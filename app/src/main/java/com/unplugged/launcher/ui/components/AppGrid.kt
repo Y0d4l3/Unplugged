@@ -47,20 +47,17 @@ fun AppGrid(
             userScrollEnabled = false
         ) {
             itemsIndexed(appSlots) { index, app ->
-                GlassKey(
-                    onClick = {
-                        if (app != null) {
-                            onLaunchApp(app)
-                        } else {
-                            onAddAppClicked(index)
-                        }
-                    },
-                    onLongClick = {
-                        if (app != null) {
-                            onRemoveApp(index)
-                        }
+                GlassKey(onClick = {
+                    if (app != null) {
+                        onLaunchApp(app)
+                    } else {
+                        onAddAppClicked(index)
                     }
-                ) {
+                }, onLongClick = {
+                    if (app != null) {
+                        onRemoveApp(index)
+                    }
+                }) {
                     if (app != null) {
                         AppIcon(
                             componentName = app.componentName,
@@ -105,12 +102,7 @@ private fun AppGridPreview() {
         null,
         null,
 
-    )
+        )
 
-    AppGrid(
-        appSlots = fakeApps,
-        onAddAppClicked = {},
-        onLaunchApp = {},
-        onRemoveApp = {}
-    )
+    AppGrid(appSlots = fakeApps, onAddAppClicked = {}, onLaunchApp = {}, onRemoveApp = {})
 }

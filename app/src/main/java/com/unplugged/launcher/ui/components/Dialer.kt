@@ -46,14 +46,11 @@ fun Dialer(
                 .padding(horizontal = 16.dp)
                 .height(80.dp)
                 .border(
-                    2.dp, Color.White.copy(alpha = 0.6f),
-                    RoundedCornerShape(12.dp)
+                    2.dp, Color.White.copy(alpha = 0.6f), RoundedCornerShape(12.dp)
                 )
                 .background(
-                    Color.Black,
-                    RoundedCornerShape(12.dp)
-                ),
-            contentAlignment = Alignment.Center
+                    Color.Black, RoundedCornerShape(12.dp)
+                ), contentAlignment = Alignment.Center
         ) {
             Text(
                 text = dialerUiState.enteredNumber,
@@ -75,8 +72,7 @@ fun Dialer(
             items(9) { index ->
                 val number = (index + 1).toString()
                 GlassKey(
-                    onClick = { onNumberClicked(number) }
-                ) {
+                    onClick = { onNumberClicked(number) }) {
                     Text(text = number, fontSize = 28.sp, color = Color.White)
                 }
             }
@@ -95,8 +91,7 @@ fun Dialer(
 
             item {
                 GlassKey(
-                    onClick = { onNumberClicked("0") }
-                ) {
+                    onClick = { onNumberClicked("0") }) {
                     Text(text = "0", fontSize = 28.sp, color = Color.White)
                 }
             }
@@ -126,6 +121,5 @@ private fun DialerPreview_WithNumber() {
         dialerUiState = uiStateWithNumber,
         onNumberClicked = {},
         onDeleteClicked = {},
-        onCallClicked = {}
-    )
+        onCallClicked = {})
 }

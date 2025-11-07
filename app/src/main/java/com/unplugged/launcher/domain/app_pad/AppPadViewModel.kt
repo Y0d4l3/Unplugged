@@ -3,7 +3,6 @@ package com.unplugged.launcher.domain.app_pad
 import android.app.Application
 import android.content.Intent
 import android.content.IntentFilter
-import com.unplugged.launcher.util.VibratorManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.unplugged.launcher.data.model.LauncherApp
@@ -11,6 +10,7 @@ import com.unplugged.launcher.data.repository.AppRepository
 import com.unplugged.launcher.data.repository.NotificationRepository
 import com.unplugged.launcher.data.source.local.SettingsManager
 import com.unplugged.launcher.domain.app_picker.AppPickerManager
+import com.unplugged.launcher.util.VibratorManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +25,11 @@ class AppPadViewModel(app: Application) : AndroidViewModel(app) {
     private val appRepository: AppRepository by lazy { AppRepository(app) }
     private val settingsManager: SettingsManager by lazy { SettingsManager(app) }
     private val appPickerManager: AppPickerManager by lazy { AppPickerManager() }
-    private val appPadManager: AppPadManager by lazy { AppPadManager(appRepository, settingsManager, viewModelScope) }
+    private val appPadManager: AppPadManager by lazy {
+        AppPadManager(
+            appRepository, settingsManager, viewModelScope
+        )
+    }
     private val vibratorManager: VibratorManager by lazy { VibratorManager(app) }
 
     private var selectedSlotIndex: Int? = null
@@ -33,8 +37,7 @@ class AppPadViewModel(app: Application) : AndroidViewModel(app) {
     private val screenStateReceiver = ScreenStateReceiver(
         onScreenOn = {
             appPadManager.randomizeAppSlots()
-        }
-    )
+        })
 
     val uiState: StateFlow<AppPadUiState> = combine(
         appPadManager.appSlots,
@@ -73,13 +76,11 @@ class AppPadViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private fun observeAndPersistFavoriteApps() {
-        appPadManager.appSlots
-            .onEach { appSlots ->
+        appPadManager.appSlots.onEach { appSlots ->
                 val packageNames = appSlots.mapNotNull { it?.componentName?.packageName }.toSet()
                 settingsManager.saveFavoriteApps(packageNames)
                 NotificationRepository.setWhitelistedApps(packageNames)
-            }
-            .launchIn(viewModelScope)
+            }.launchIn(viewModelScope)
     }
 
     fun onAddAppClicked(slotIndex: Int) {

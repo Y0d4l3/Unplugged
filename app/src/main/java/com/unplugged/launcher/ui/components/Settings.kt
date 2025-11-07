@@ -104,30 +104,26 @@ fun SettingsPage(
 @Composable
 private fun SettingsPagePreview_BatteryOff() {
     val uiState = SettingsUiState(
-        isBatterySaverOn = false,
-        areNotificationsEnabled = true
+        isBatterySaverOn = false, areNotificationsEnabled = true
     )
 
     SettingsPage(
         settingsUiState = uiState,
         onOpenBatterySettings = {},
         openNotificationAccessSettings = {},
-        onToggleNotifications = {}
-    )
+        onToggleNotifications = {})
 }
 
 @Preview(name = "Settings - Battery Saver ON", showBackground = true, backgroundColor = 0xFF1C1C1E)
 @Composable
 private fun SettingsPagePreview_BatteryOn() {
     val uiState = SettingsUiState(
-        isBatterySaverOn = true,
-        areNotificationsEnabled = false
+        isBatterySaverOn = true, areNotificationsEnabled = false
     )
 
     SettingsPage(
         settingsUiState = uiState,
         onOpenBatterySettings = {},
         openNotificationAccessSettings = {},
-        onToggleNotifications = {}
-    )
+        onToggleNotifications = {})
 }

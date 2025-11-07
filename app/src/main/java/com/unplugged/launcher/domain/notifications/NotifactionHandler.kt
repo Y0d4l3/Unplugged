@@ -16,7 +16,9 @@ class NotificationHandler(private val context: Context) {
         } else {
             PackageManager.COMPONENT_ENABLED_STATE_DISABLED
         }
-        context.packageManager.setComponentEnabledSetting(componentName, newState, PackageManager.DONT_KILL_APP)
+        context.packageManager.setComponentEnabledSetting(
+            componentName, newState, PackageManager.DONT_KILL_APP
+        )
     }
 
     fun openNotificationAccessSettings() {

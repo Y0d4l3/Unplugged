@@ -1,8 +1,8 @@
 package com.unplugged.launcher.data.repository
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.ComponentName
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import androidx.core.graphics.drawable.toBitmap
@@ -28,8 +28,7 @@ class AppRepository(private val context: Context) {
                         label = resolveInfo.loadLabel(pm).toString(),
                         componentName = ComponentName(activityInfo.packageName, activityInfo.name)
                     )
-                }
-                .sortedBy { it.label.lowercase() }
+                }.sortedBy { it.label.lowercase() }
         }
     }
 

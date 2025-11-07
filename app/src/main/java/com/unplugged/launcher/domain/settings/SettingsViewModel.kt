@@ -22,8 +22,7 @@ class SettingsViewModel(app: Application) : AndroidViewModel(app) {
         settingsManager.showPushNotificationsFlow.distinctUntilChanged()
     ) { isBatterySaverOn, areNotificationsEnabled ->
         SettingsUiState(
-            isBatterySaverOn = isBatterySaverOn,
-            areNotificationsEnabled = areNotificationsEnabled
+            isBatterySaverOn = isBatterySaverOn, areNotificationsEnabled = areNotificationsEnabled
         )
     }.stateIn(
         scope = viewModelScope,
@@ -43,6 +42,5 @@ class SettingsViewModel(app: Application) : AndroidViewModel(app) {
 }
 
 data class SettingsUiState(
-    val isBatterySaverOn: Boolean = false,
-    val areNotificationsEnabled: Boolean = true
+    val isBatterySaverOn: Boolean = false, val areNotificationsEnabled: Boolean = true
 )

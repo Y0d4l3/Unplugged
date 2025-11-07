@@ -1,4 +1,5 @@
 package com.unplugged.launcher.data.repository
+
 import com.unplugged.launcher.data.model.AppNotification
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

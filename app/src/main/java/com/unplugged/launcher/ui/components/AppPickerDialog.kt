@@ -3,14 +3,21 @@ package com.unplugged.launcher.ui.components
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,47 +32,38 @@ fun AppPickerDialog(
     onDismiss: () -> Unit,
     onSearchQueryChanged: (String) -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("App auswählen") },
-        text = {
-            Column(modifier = Modifier.heightIn(max = 400.dp)) {
-                OutlinedTextField(
-                    value = appPadUiState.appPickerSearchQuery,
-                    onValueChange = onSearchQueryChanged,
-                    label = { Text("Suchen...") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    singleLine = true
-                )
+    AlertDialog(onDismissRequest = onDismiss, title = { Text("App auswählen") }, text = {
+        Column(modifier = Modifier.heightIn(max = 400.dp)) {
+            OutlinedTextField(
+                value = appPadUiState.appPickerSearchQuery,
+                onValueChange = onSearchQueryChanged,
+                label = { Text("Suchen...") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                singleLine = true
+            )
 
-                LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    items(
-                        appPadUiState.appPickerApps,
-                        key = { it.componentName.flattenToString() }) { app ->
-                        AppPickerItem(
-                            app = app,
-                            onAppClick = { onAppSelected(app) }
-                        )
-                    }
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                items(
+                    appPadUiState.appPickerApps,
+                    key = { it.componentName.flattenToString() }) { app ->
+                    AppPickerItem(
+                        app = app, onAppClick = { onAppSelected(app) })
                 }
             }
-        },
-        confirmButton = {},
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Abbrechen")
-            }
         }
-    )
+    }, confirmButton = {}, dismissButton = {
+        TextButton(onClick = onDismiss) {
+            Text("Abbrechen")
+        }
+    })
 }
 
 
 @Composable
 private fun AppPickerItem(
-    app: LauncherApp,
-    onAppClick: () -> Unit
+    app: LauncherApp, onAppClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -89,11 +87,12 @@ private fun AppPickerItem(
 @Preview(name = "App Picker Item", showBackground = true)
 @Composable
 private fun AppPickerItemPreview() {
-    AppPickerItem(app= LauncherApp(
-        label = "Sample App",
-        componentName = ComponentName("com.example", "com.example.Activity"),
-        icon = null
-    ) , onAppClick = {})
+    AppPickerItem(
+        app = LauncherApp(
+            label = "Sample App",
+            componentName = ComponentName("com.example", "com.example.Activity"),
+            icon = null
+        ), onAppClick = {})
 }
 
 
@@ -110,14 +109,12 @@ private fun AppPickerDialogPreview() {
     )
     val searchQuery = ""
     val fakeUiState = AppPadUiState(
-        appPickerApps = fakeApps,
-        appPickerSearchQuery = searchQuery
+        appPickerApps = fakeApps, appPickerSearchQuery = searchQuery
     )
 
     AppPickerDialog(
         appPadUiState = fakeUiState,
         onAppSelected = {},
         onDismiss = {},
-        onSearchQueryChanged = {}
-    )
+        onSearchQueryChanged = {})
 }

@@ -12,9 +12,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
 data class GlobalUiState(
-    val time: String = "",
-    val date: String = "",
-    val lastNotification: AppNotification? = null
+    val time: String = "", val date: String = "", val lastNotification: AppNotification? = null
 )
 
 class NotificationViewModel(app: Application) : AndroidViewModel(app) {
@@ -22,14 +20,10 @@ class NotificationViewModel(app: Application) : AndroidViewModel(app) {
     private val notificationHandler: NotificationHandler by lazy { NotificationHandler(app) }
 
     val uiState: StateFlow<GlobalUiState> = combine(
-        TimeTicker.time,
-        TimeTicker.date,
-        NotificationRepository.lastNotification
+        TimeTicker.time, TimeTicker.date, NotificationRepository.lastNotification
     ) { time, date, notification ->
         GlobalUiState(
-            time = time,
-            date = date,
-            lastNotification = notification
+            time = time, date = date, lastNotification = notification
         )
     }.stateIn(
         scope = viewModelScope,

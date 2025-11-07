@@ -12,7 +12,8 @@ class TileService : TileService() {
     override fun onTileAdded() {
         super.onTileAdded()
         qsTile?.let { tile ->
-            tile.state = if (isMyAppDefaultLauncher(this)) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
+            tile.state =
+                if (isMyAppDefaultLauncher(this)) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
             tile.updateTile()
         }
     }
@@ -20,7 +21,8 @@ class TileService : TileService() {
     override fun onStartListening() {
         super.onStartListening()
         qsTile?.let { tile ->
-            tile.state = if (isMyAppDefaultLauncher(this)) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
+            tile.state =
+                if (isMyAppDefaultLauncher(this)) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
             tile.updateTile()
         }
     }
