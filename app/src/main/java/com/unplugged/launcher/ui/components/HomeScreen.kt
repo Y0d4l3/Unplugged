@@ -34,8 +34,8 @@ fun HomeScreen(
     val appPadUiState by appPadViewModel.uiState.collectAsState()
     val settingsUiState by settingsViewModel.uiState.collectAsState()
 
-    val topPagerState = rememberPagerState(initialPage = 0) { 1 }
-    val bottomPagerState = rememberPagerState(initialPage = 1) { 3 }
+    val topPagerState = rememberPagerState(initialPage = 0) { 3 }
+    val bottomPagerState = rememberPagerState(initialPage = 0) { 3 }
 
     HomeScreenContent(
         topPagerState = topPagerState,
