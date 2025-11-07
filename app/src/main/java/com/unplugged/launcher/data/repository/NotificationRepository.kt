@@ -25,12 +25,4 @@ object NotificationRepository {
         if (key == null) return
         _dismissedNotificationKeys.value += key
     }
-
-    fun getDismissedNotificationKeys(): Set<String> {
-        return _dismissedNotificationKeys.value
-    }
-
-    fun clearDismissedKeys() {
-        _dismissedNotificationKeys.value = emptySet()
-    }
 }
